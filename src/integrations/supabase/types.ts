@@ -22,6 +22,7 @@ export type Database = {
           full_name: string | null
           id: string
           subscription_plan: string | null
+          theme_preference: string | null
           updated_at: string
           user_id: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           subscription_plan?: string | null
+          theme_preference?: string | null
           updated_at?: string
           user_id: string
         }
@@ -42,6 +44,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           subscription_plan?: string | null
+          theme_preference?: string | null
           updated_at?: string
           user_id?: string
         }
