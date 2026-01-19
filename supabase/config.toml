@@ -1,1 +1,4 @@
 project_id = "vdjckpwwqqcqavrucndh"
+
+[functions.analyze-trade]
+verify_jwt = false
