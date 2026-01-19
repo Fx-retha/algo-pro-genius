@@ -3,6 +3,7 @@ import { Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +51,7 @@ const NavBar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             {user ? (
               <>
                 <span className="text-sm text-muted-foreground">
@@ -98,6 +100,10 @@ const NavBar = () => {
                   {link.name}
                 </a>
               ))}
+              <div className="flex items-center gap-2 py-2">
+                <span className="text-muted-foreground text-sm">Theme:</span>
+                <ThemeToggle />
+              </div>
               {user ? (
                 <Button variant="outline" size="default" onClick={handleSignOut}>
                   Sign Out

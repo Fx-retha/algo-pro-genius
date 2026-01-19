@@ -43,6 +43,33 @@
     --dark-elevated: 240 10% 8%;
   }
 
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 10%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 320 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 190 100% 40%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 5% 92%;
+    --muted-foreground: 240 5% 45%;
+    --accent: 280 100% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 85%;
+    --input: 240 5% 85%;
+    --ring: 320 100% 50%;
+    --neon-pink: 320 100% 50%;
+    --neon-cyan: 190 100% 40%;
+    --neon-purple: 280 100% 55%;
+    --dark-base: 0 0% 98%;
+    --dark-elevated: 0 0% 95%;
+  }
+
   .dark {
     --background: 240 10% 3%;
     --foreground: 0 0% 98%;
