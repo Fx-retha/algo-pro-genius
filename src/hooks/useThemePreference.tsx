@@ -1,7 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+
+export type ThemeOption = 'light' | 'dark' | 'system' | 'cyberpunk' | 'minimal' | 'minimal-dark';
+
+export const themeOptions: { value: ThemeOption; label: string; icon: string }[] = [
+  { value: 'light', label: 'Light', icon: 'sun' },
+  { value: 'dark', label: 'Dark', icon: 'moon' },
+  { value: 'system', label: 'System', icon: 'monitor' },
+  { value: 'cyberpunk', label: 'Cyberpunk', icon: 'zap' },
+  { value: 'minimal', label: 'Minimal', icon: 'minus' },
+  { value: 'minimal-dark', label: 'Minimal Dark', icon: 'circle' },
+];
 
 export function useThemePreference() {
   const { theme, setTheme } = useTheme();
@@ -32,7 +43,7 @@ export function useThemePreference() {
   }, [user, setTheme]);
 
   // Save theme preference to database when it changes
-  const updateTheme = async (newTheme: string) => {
+  const updateTheme = useCallback(async (newTheme: ThemeOption) => {
     setTheme(newTheme);
 
     if (user) {
@@ -41,10 +52,10 @@ export function useThemePreference() {
         .update({ theme_preference: newTheme })
         .eq('user_id', user.id);
     }
-  };
+  }, [user, setTheme]);
 
   return {
-    theme,
+    theme: theme as ThemeOption,
     setTheme: updateTheme,
     isLoading,
   };
