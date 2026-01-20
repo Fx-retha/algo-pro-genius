@@ -91,6 +91,90 @@
     --input: 240 10% 20%;
     --ring: 320 100% 60%;
   }
+
+  /* Cyberpunk Neon Theme - Intense neon colors with dark base */
+  .cyberpunk {
+    --background: 260 20% 4%;
+    --foreground: 180 100% 90%;
+    --card: 260 20% 8%;
+    --card-foreground: 180 100% 90%;
+    --popover: 260 20% 8%;
+    --popover-foreground: 180 100% 90%;
+    --primary: 320 100% 65%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 180 100% 50%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 260 20% 15%;
+    --muted-foreground: 180 50% 60%;
+    --accent: 50 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 320 100% 40%;
+    --input: 260 20% 15%;
+    --ring: 180 100% 50%;
+    --neon-pink: 320 100% 65%;
+    --neon-cyan: 180 100% 50%;
+    --neon-purple: 280 100% 60%;
+    --dark-base: 260 20% 4%;
+    --dark-elevated: 260 20% 10%;
+  }
+
+  /* Minimal Theme - Clean, muted, sophisticated */
+  .minimal {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
+    --primary: 0 0% 15%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 85%;
+    --accent-foreground: 0 0% 15%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 30%;
+    --neon-pink: 0 0% 30%;
+    --neon-cyan: 0 0% 40%;
+    --neon-purple: 0 0% 35%;
+    --dark-base: 0 0% 98%;
+    --dark-elevated: 0 0% 95%;
+  }
+
+  /* Minimal Dark Theme */
+  .minimal-dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 92%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 92%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 92%;
+    --primary: 0 0% 92%;
+    --primary-foreground: 0 0% 8%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 92%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 25%;
+    --accent-foreground: 0 0% 92%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 70%;
+    --neon-pink: 0 0% 70%;
+    --neon-cyan: 0 0% 60%;
+    --neon-purple: 0 0% 65%;
+    --dark-base: 0 0% 8%;
+    --dark-elevated: 0 0% 12%;
+  }
 }
 
 @layer base {
