@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, Download, Shield, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
   const navigate = useNavigate();
 
   const navLinks = [
@@ -54,9 +56,20 @@ const NavBar = () => {
             <ThemeToggle />
             {user ? (
               <>
-                <span className="text-sm text-muted-foreground">
-                  {user.email}
-                </span>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="outline" size="sm">
+                      <Shield className="w-4 h-4 mr-1" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
+                <Link to="/dashboard">
+                  <Button variant="hero" size="sm">
+                    <Download className="w-4 h-4 mr-1" />
+                    Open App
+                  </Button>
+                </Link>
                 <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   <LogOut className="w-4 h-4" />
                 </Button>
@@ -69,8 +82,15 @@ const NavBar = () => {
                   </Button>
                 </Link>
                 <Link to="/auth">
+                  <Button variant="outline" size="default">
+                    <Users className="w-4 h-4 mr-1" />
+                    Become Mentor
+                  </Button>
+                </Link>
+                <Link to="/auth">
                   <Button variant="hero" size="default">
-                    Get Started
+                    <Download className="w-4 h-4 mr-1" />
+                    Download App
                   </Button>
                 </Link>
               </>
@@ -105,15 +125,41 @@ const NavBar = () => {
                 <ThemeToggle />
               </div>
               {user ? (
-                <Button variant="outline" size="default" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
-              ) : (
-                <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  <Button variant="hero" size="default" className="w-full">
-                    Get Started
+                <div className="flex flex-col gap-2">
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" size="default" className="w-full">
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                    <Button variant="hero" size="default" className="w-full">
+                      <Download className="w-4 h-4 mr-2" />
+                      Open App
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="default" onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
                   </Button>
-                </Link>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" size="default" className="w-full">
+                      <Users className="w-4 h-4 mr-2" />
+                      Become Mentor
+                    </Button>
+                  </Link>
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button variant="hero" size="default" className="w-full">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download App
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import heroRobot from "@/assets/hero-robot.jpeg";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Zap, Download, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -59,13 +59,28 @@ const HeroSection = () => {
             >
               <Link to="/auth">
                 <Button variant="hero" size="xl">
-                  Become a Mentor
-                  <ArrowRight className="w-5 h-5" />
+                  <Download className="w-5 h-5 mr-2" />
+                  Download App
                 </Button>
               </Link>
               <Link to="/auth">
                 <Button variant="outline" size="xl">
+                  <Users className="w-5 h-5 mr-2" />
+                  Become Mentor
+                </Button>
+              </Link>
+            </motion.div>
+            
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              <Link to="/auth">
+                <Button variant="ghost" size="default" className="text-muted-foreground hover:text-primary">
                   Already a member? Sign in
+                  <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </motion.div>
