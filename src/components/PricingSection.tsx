@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Star } from "lucide-react";
+import { Check, Zap, Star } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 
 const plans = [
@@ -34,24 +34,6 @@ const plans = [
     popular: true,
     icon: Star,
   },
-  {
-    name: "Enterprise",
-    price: "$199",
-    period: "/month",
-    description: "For trading teams & mentors",
-    features: [
-      "Unlimited Accounts",
-      "White-label Solution",
-      "Dedicated Account Manager",
-      "API Access",
-      "Custom Integrations",
-      "Advanced Analytics",
-      "Team Management",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-    icon: Crown,
-  },
 ];
 
 const PricingSection = () => {
@@ -74,7 +56,7 @@ const PricingSection = () => {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {plans.map((plan, index) => (
             <ScrollReveal key={plan.name} delay={index * 0.1}>
               <div
