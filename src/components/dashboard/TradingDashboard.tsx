@@ -1,0 +1,93 @@
+import { useState } from 'react';
+import { BotControlPanel } from './BotControlPanel';
+import { RobotList } from './RobotList';
+import { BottomNavigation } from './BottomNavigation';
+import { PairsModal } from './PairsModal';
+import { LogsModal } from './LogsModal';
+import { MetatraderSettings } from './MetatraderSettings';
+import { BotSettings } from './BotSettings';
+import { useAuth } from '@/hooks/useAuth';
+import { useLicense } from '@/hooks/useLicense';
+import { Info, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+
+type Tab = 'home' | 'metatrader' | 'settings';
+
+export function TradingDashboard() {
+  const { user, signOut } = useAuth();
+  const { license } = useLicense();
+  const [activeTab, setActiveTab] = useState<Tab>('home');
+  const [pairsOpen, setPairsOpen] = useState(false);
+  const [logsOpen, setLogsOpen] = useState(false);
+
+  const getDisplayName = () => {
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return 'Trader';
+  };
+
+  return (
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background gradient effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+      
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="flex items-center justify-between px-4 h-14">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-semibold text-foreground">{getDisplayName()}</span>
+            <button className="w-6 h-6 rounded-full border border-border flex items-center justify-center">
+              <Info className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="pb-20">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2 }}
+          className="px-4"
+        >
+          {activeTab === 'home' && (
+            <div className="space-y-6">
+              <BotControlPanel 
+                onPairsClick={() => setPairsOpen(true)}
+                onLogsClick={() => setLogsOpen(true)}
+              />
+              <RobotList />
+            </div>
+          )}
+
+          {activeTab === 'metatrader' && (
+            <div className="py-6">
+              <MetatraderSettings />
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="py-6">
+              <BotSettings />
+            </div>
+          )}
+        </motion.div>
+      </main>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Modals */}
+      <PairsModal open={pairsOpen} onOpenChange={setPairsOpen} />
+      <LogsModal open={logsOpen} onOpenChange={setLogsOpen} />
+    </div>
+  );
+}
