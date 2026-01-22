@@ -60,6 +60,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          mentor_id: string | null
           subscription_plan: string | null
           theme_preference: string | null
           updated_at: string
@@ -71,6 +72,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          mentor_id?: string | null
           subscription_plan?: string | null
           theme_preference?: string | null
           updated_at?: string
@@ -82,6 +84,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          mentor_id?: string | null
           subscription_plan?: string | null
           theme_preference?: string | null
           updated_at?: string
@@ -116,6 +119,7 @@ export type Database = {
     }
     Functions: {
       generate_license_key: { Args: never; Returns: string }
+      generate_mentor_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -2,16 +2,24 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
-import NavBar from '@/components/NavBar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserManagement } from '@/components/admin/UserManagement';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { LicenseManagement } from '@/components/admin/LicenseManagement';
-import { Loader2, Users, Key } from 'lucide-react';
+import { UserManagement } from '@/components/admin/UserManagement';
+import { ManageEAs } from '@/components/admin/ManageEAs';
+import { SetupMethods } from '@/components/admin/SetupMethods';
+import { ProfileSettings } from '@/components/admin/ProfileSettings';
+import { AppearanceSettings } from '@/components/admin/AppearanceSettings';
+import { MyWebsite } from '@/components/admin/MyWebsite';
+import { Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Admin() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: roleLoading } = useUserRole();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -37,33 +45,49 @@ export default function Admin() {
     return null;
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <AdminDashboard />;
+      case 'manage-eas':
+        return <ManageEAs />;
+      case 'licenses':
+        return <LicenseManagement />;
+      case 'setup-methods':
+        return <SetupMethods />;
+      case 'profile':
+        return <ProfileSettings />;
+      case 'appearance':
+        return <AppearanceSettings />;
+      case 'my-website':
+        return <MyWebsite />;
+      default:
+        return <AdminDashboard />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
-      <div className="container mx-auto px-4 py-8 pt-24">
-        <h1 className="text-3xl font-display font-bold mb-8">Admin Dashboard</h1>
-        
-        <Tabs defaultValue="licenses" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="licenses" className="flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              Licenses
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Users
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="licenses">
-            <LicenseManagement />
-          </TabsContent>
-          
-          <TabsContent value="users">
-            <UserManagement />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <AdminSidebar 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+      />
+      
+      {/* Main Content */}
+      <main className="lg:ml-72 min-h-screen">
+        <div className="p-6 pt-20 lg:pt-6">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {renderContent()}
+          </motion.div>
+        </div>
+      </main>
     </div>
   );
 }
