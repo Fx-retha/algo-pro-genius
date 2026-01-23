@@ -7,37 +7,60 @@ import {
   Clock 
 } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import { Suspense, lazy } from "react";
 
-const features = [
+const Feature3DIcon = lazy(() => import("./3d/Feature3DIcon").then(m => ({ default: m.Feature3DIcon })));
+
+type FeatureIconType = 'copy' | 'sync' | 'shield' | 'refresh' | 'globe' | 'clock';
+
+const features: {
+  icon: typeof Copy;
+  icon3d: FeatureIconType;
+  title: string;
+  description: string;
+  color: string;
+}[] = [
   {
     icon: Copy,
+    icon3d: 'copy',
     title: "Copy Trading",
     description: "Automatically replicate trades from successful mentors to your account in real-time.",
+    color: "#00f7ff",
   },
   {
     icon: Zap,
+    icon3d: 'sync',
     title: "Instant Sync",
     description: "Real-time synchronization ensures your trades execute within milliseconds.",
+    color: "#f0b429",
   },
   {
     icon: Shield,
+    icon3d: 'shield',
     title: "Secure & Reliable",
     description: "Bank-grade security with encrypted connections and secure API integrations.",
+    color: "#10b981",
   },
   {
     icon: RefreshCw,
+    icon3d: 'refresh',
     title: "Auto Updates",
     description: "Stop loss and take profit modifications sync automatically to all connected accounts.",
+    color: "#8b5cf6",
   },
   {
     icon: Globe,
+    icon3d: 'globe',
     title: "Any Broker",
     description: "Compatible with virtually any MT4 or MT5 broker worldwide.",
+    color: "#ec4899",
   },
   {
     icon: Clock,
+    icon3d: 'clock',
     title: "24/7 Operation",
     description: "Our systems run continuously to ensure you never miss a trading opportunity.",
+    color: "#f97316",
   },
 ];
 
@@ -45,6 +68,15 @@ const FeaturesSection = () => {
   return (
     <section id="features" className="py-24 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent" />
+      
+      {/* Animated background grid */}
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `
+          linear-gradient(to right, hsl(var(--primary) / 0.2) 1px, transparent 1px),
+          linear-gradient(to bottom, hsl(var(--primary) / 0.2) 1px, transparent 1px)
+        `,
+        backgroundSize: '60px 60px'
+      }} />
       
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
@@ -65,14 +97,24 @@ const FeaturesSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <ScrollReveal key={feature.title} delay={index * 0.1}>
-              <div className="group glass-card rounded-xl p-6 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] h-full">
-                <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4 group-hover:neon-glow transition-all duration-300">
-                  <feature.icon className="w-6 h-6 text-primary" />
+              <div className="group glass-card rounded-xl p-6 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] h-full relative overflow-hidden">
+                {/* Gradient accent */}
+                <div 
+                  className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"
+                  style={{ background: feature.color }}
+                />
+                
+                {/* 3D Icon with fallback */}
+                <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:neon-glow transition-all duration-300 relative">
+                  <Suspense fallback={<feature.icon className="w-6 h-6 text-primary" />}>
+                    <Feature3DIcon type={feature.icon3d} color={feature.color} />
+                  </Suspense>
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-3 text-foreground">
+                
+                <h3 className="font-display text-xl font-semibold mb-3 text-foreground relative z-10">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed relative z-10">
                   {feature.description}
                 </p>
               </div>

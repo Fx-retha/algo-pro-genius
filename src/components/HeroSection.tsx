@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
-import heroRobot from "@/assets/hero-robot.jpeg";
 import { ArrowRight, Zap, Download, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Suspense, lazy } from "react";
+
+// Lazy load the 3D scene for better performance
+const HeroScene = lazy(() => import("@/components/3d/HeroScene").then(m => ({ default: m.HeroScene })));
 
 const HeroSection = () => {
   return (
@@ -12,8 +15,17 @@ const HeroSection = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse-glow" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/20 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1s' }} />
       
+      {/* Grid Background */}
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `
+          linear-gradient(to right, hsl(var(--primary) / 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, hsl(var(--primary) / 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '50px 50px'
+      }} />
+      
       <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
           {/* Text Content */}
           <motion.div 
             className="flex-1 text-center lg:text-left"
@@ -106,22 +118,23 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
           
-          {/* Hero Image */}
+          {/* 3D Robot Scene */}
           <motion.div 
-            className="flex-1 relative"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex-1 relative w-full h-[400px] md:h-[500px] lg:h-[600px]"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
           >
-            <div className="relative animate-float">
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent rounded-2xl" />
-              <img 
-                src={heroRobot} 
-                alt="Code Base Algo Pro AI Trading Assistant" 
-                className="w-full max-w-lg mx-auto rounded-2xl shadow-2xl"
-              />
-              <div className="absolute inset-0 rounded-2xl neon-glow opacity-50" />
-            </div>
+            <Suspense fallback={
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+              </div>
+            }>
+              <HeroScene className="w-full h-full" />
+            </Suspense>
+            
+            {/* Glow effect behind 3D scene */}
+            <div className="absolute inset-0 -z-10 bg-gradient-radial from-primary/20 via-transparent to-transparent rounded-full blur-3xl" />
           </motion.div>
         </div>
       </div>
