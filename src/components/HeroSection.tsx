@@ -2,10 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Download, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Suspense, lazy } from "react";
-
-// Lazy load the 3D scene for better performance
-const HeroScene = lazy(() => import("@/components/3d/HeroScene").then(m => ({ default: m.HeroScene })));
+import heroRobot from "@/assets/hero-robot.jpeg";
 
 const HeroSection = () => {
   return (
@@ -118,22 +115,22 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
           
-          {/* 3D Robot Scene */}
+          {/* Hero Image */}
           <motion.div 
             className="flex-1 relative w-full h-[400px] md:h-[500px] lg:h-[600px]"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.4 }}
           >
-            <Suspense fallback={
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-32 h-32 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
-              </div>
-            }>
-              <HeroScene className="w-full h-full" />
-            </Suspense>
+            <div className="w-full h-full flex items-center justify-center">
+              <img 
+                src={heroRobot} 
+                alt="Trading Robot" 
+                className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+              />
+            </div>
             
-            {/* Glow effect behind 3D scene */}
+            {/* Glow effect behind image */}
             <div className="absolute inset-0 -z-10 bg-gradient-radial from-primary/20 via-transparent to-transparent rounded-full blur-3xl" />
           </motion.div>
         </div>
