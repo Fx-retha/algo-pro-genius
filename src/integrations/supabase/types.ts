@@ -61,6 +61,7 @@ export type Database = {
           full_name: string | null
           id: string
           mentor_id: string | null
+          phone_number: string | null
           subscription_plan: string | null
           theme_preference: string | null
           updated_at: string
@@ -73,6 +74,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           mentor_id?: string | null
+          phone_number?: string | null
           subscription_plan?: string | null
           theme_preference?: string | null
           updated_at?: string
@@ -85,6 +87,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           mentor_id?: string | null
+          phone_number?: string | null
           subscription_plan?: string | null
           theme_preference?: string | null
           updated_at?: string

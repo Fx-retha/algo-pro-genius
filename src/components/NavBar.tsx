@@ -1,16 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, Download, Shield, Users } from "lucide-react";
+import { Menu, X, Download, Shield } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { isAdmin } = useUserRole();
-  const navigate = useNavigate();
 
   const navLinks = [
     { name: "Home", href: "#" },
@@ -18,11 +17,6 @@ const NavBar = () => {
     { name: "Pricing", href: "#pricing" },
     { name: "FAQ", href: "#faq" },
   ];
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card">
@@ -70,27 +64,13 @@ const NavBar = () => {
                     Open App
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                  <LogOut className="w-4 h-4" />
-                </Button>
               </>
             ) : (
               <>
-                <Link to="/auth">
-                  <Button variant="ghost" size="default">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/auth">
-                  <Button variant="outline" size="default">
-                    <Users className="w-4 h-4 mr-1" />
-                    Become Mentor
-                  </Button>
-                </Link>
-                <Link to="/auth">
+                <Link to="/license-auth">
                   <Button variant="hero" size="default">
                     <Download className="w-4 h-4 mr-1" />
-                    Download App
+                    Open App
                   </Button>
                 </Link>
               </>
@@ -140,23 +120,13 @@ const NavBar = () => {
                       Open App
                     </Button>
                   </Link>
-                  <Button variant="outline" size="default" onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </Button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <Link to="/auth" onClick={() => setIsOpen(false)}>
-                    <Button variant="outline" size="default" className="w-full">
-                      <Users className="w-4 h-4 mr-2" />
-                      Become Mentor
-                    </Button>
-                  </Link>
-                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <Link to="/license-auth" onClick={() => setIsOpen(false)}>
                     <Button variant="hero" size="default" className="w-full">
                       <Download className="w-4 h-4 mr-2" />
-                      Download App
+                      Open App
                     </Button>
                   </Link>
                 </div>
