@@ -7,6 +7,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Mail, Lock, User, Phone, Key, Loader2, ArrowRight } from "lucide-react";
+import { z } from "zod";
+
+// Phone validation schema
+const phoneSchema = z.string()
+  .min(10, "Phone number must be at least 10 digits")
+  .max(15, "Phone number must be at most 15 digits")
+  .regex(/^\+?[0-9\s\-()]+$/, "Invalid phone number format");
 
 type Step = 'license' | 'auth' | 'forgot-password' | 'reset-sent';
 
@@ -21,6 +28,7 @@ const LicenseAuth = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [licenseError, setLicenseError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
@@ -117,15 +125,21 @@ const LicenseAuth = () => {
         });
         navigate("/dashboard");
       } else {
-        // Validate phone number
-        if (!phoneNumber.trim()) {
-          toast({
-            title: "Phone number required",
-            description: "Please enter your phone number.",
-            variant: "destructive",
-          });
-          setLoading(false);
-          return;
+        // Validate phone number with zod
+        try {
+          phoneSchema.parse(phoneNumber);
+          setPhoneError(null);
+        } catch (e) {
+          if (e instanceof z.ZodError) {
+            setPhoneError(e.errors[0]?.message || "Invalid phone number");
+            toast({
+              title: "Invalid phone number",
+              description: e.errors[0]?.message || "Please enter a valid phone number.",
+              variant: "destructive",
+            });
+            setLoading(false);
+            return;
+          }
         }
 
         const { error } = await signUp(email, password, fullName, phoneNumber);
@@ -308,11 +322,17 @@ const LicenseAuth = () => {
                           type="tel"
                           placeholder="+1 234 567 8900"
                           value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          className="pl-10 bg-muted/50 border-border"
+                          onChange={(e) => {
+                            setPhoneNumber(e.target.value);
+                            setPhoneError(null);
+                          }}
+                          className={`pl-10 bg-muted/50 border-border ${phoneError ? 'border-destructive' : ''}`}
                           required
                         />
                       </div>
+                      {phoneError && (
+                        <p className="text-sm text-destructive">{phoneError}</p>
+                      )}
                     </div>
                   </>
                 )}

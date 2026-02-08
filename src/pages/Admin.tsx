@@ -23,7 +23,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/auth');
+      navigate('/mentor-auth');
     }
   }, [user, authLoading, navigate]);
 

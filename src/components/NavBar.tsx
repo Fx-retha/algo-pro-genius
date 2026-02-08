@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Download, Shield } from "lucide-react";
+import { Menu, X, Download, Shield, Users } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -67,6 +67,12 @@ const NavBar = () => {
               </>
             ) : (
               <>
+                <Link to="/mentor-auth">
+                  <Button variant="outline" size="default">
+                    <Users className="w-4 h-4 mr-1" />
+                    Become Mentor
+                  </Button>
+                </Link>
                 <Link to="/license-auth">
                   <Button variant="hero" size="default">
                     <Download className="w-4 h-4 mr-1" />
@@ -123,6 +129,12 @@ const NavBar = () => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
+                  <Link to="/mentor-auth" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" size="default" className="w-full">
+                      <Users className="w-4 h-4 mr-2" />
+                      Become Mentor
+                    </Button>
+                  </Link>
                   <Link to="/license-auth" onClick={() => setIsOpen(false)}>
                     <Button variant="hero" size="default" className="w-full">
                       <Download className="w-4 h-4 mr-2" />
