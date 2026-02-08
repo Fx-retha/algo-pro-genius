@@ -11,6 +11,7 @@ import { SetupMethods } from '@/components/admin/SetupMethods';
 import { ProfileSettings } from '@/components/admin/ProfileSettings';
 import { AppearanceSettings } from '@/components/admin/AppearanceSettings';
 import { MyWebsite } from '@/components/admin/MyWebsite';
+import { MentorApplications } from '@/components/admin/MentorApplications';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -49,6 +50,8 @@ export default function Admin() {
     switch (activeTab) {
       case 'dashboard':
         return <AdminDashboard />;
+      case 'mentor-applications':
+        return <MentorApplications />;
       case 'manage-eas':
         return <ManageEAs />;
       case 'licenses':
