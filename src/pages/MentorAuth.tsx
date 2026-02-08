@@ -106,13 +106,30 @@ const MentorAuth = () => {
       const { error } = await signUp(email, password, fullName, phoneNumber);
       if (error) throw error;
       
-      // Request admin role for mentors - this will need admin approval
-      // For now, they sign up as regular users and admin promotes them
+      // Get the newly created user
+      const { data: { user: newUser } } = await supabase.auth.getUser();
+      
+      if (newUser) {
+        // Create mentor application for admin approval
+        const { error: appError } = await supabase
+          .from('mentor_applications')
+          .insert({
+            user_id: newUser.id,
+            full_name: fullName,
+            email: email,
+            phone_number: phoneNumber,
+            status: 'pending'
+          });
+        
+        if (appError) {
+          console.error('Error creating mentor application:', appError);
+        }
+      }
       
       setStep('verification-sent');
       toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account.",
+        title: "Application submitted!",
+        description: "Please verify your email. An admin will review your mentor application.",
       });
     } catch (error: any) {
       toast({

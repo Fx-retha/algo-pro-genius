@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Moon,
-  Sun
+  Sun,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,7 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'mentor-applications', label: 'Mentor Applications', icon: Users },
   { id: 'manage-eas', label: 'Manage EAs', icon: Code },
   { id: 'licenses', label: 'Licenses', icon: Key },
   { id: 'setup-methods', label: 'Setup Methods', icon: Monitor },
