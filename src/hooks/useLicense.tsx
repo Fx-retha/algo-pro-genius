@@ -50,40 +50,20 @@ export function useLicense() {
 
     setError(null);
     
-    // First, find the license
-    const { data: existingLicense, error: findError } = await supabase
-      .from('license_keys')
-      .select('*')
-      .eq('key', licenseKey.toUpperCase())
-      .single();
+    const { data, error: rpcError } = await supabase.rpc('activate_license_key', {
+      license_key: licenseKey
+    });
 
-    if (findError || !existingLicense) {
-      setError('Invalid license key');
-      return { error: 'Invalid license key' };
+    if (rpcError) {
+      setError(rpcError.message);
+      return { error: rpcError.message };
     }
 
-    if (existingLicense.user_id) {
-      setError('License key already activated');
-      return { error: 'License key already activated' };
-    }
+    const result = data as { success: boolean; error?: string };
 
-    if (existingLicense.status !== 'active') {
-      setError('License key is not active');
-      return { error: 'License key is not active' };
-    }
-
-    // Activate the license
-    const { error: updateError } = await supabase
-      .from('license_keys')
-      .update({
-        user_id: user.id,
-        activated_at: new Date().toISOString(),
-      })
-      .eq('id', existingLicense.id);
-
-    if (updateError) {
-      setError(updateError.message);
-      return { error: updateError.message };
+    if (!result.success) {
+      setError(result.error || 'Failed to activate license');
+      return { error: result.error || 'Failed to activate license' };
     }
 
     await fetchLicense();

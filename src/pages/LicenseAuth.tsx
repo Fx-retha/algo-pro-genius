@@ -48,27 +48,20 @@ const LicenseAuth = () => {
     setLicenseError(null);
 
     try {
-      // Check if license exists and is valid
-      const { data: license, error } = await supabase
-        .from('license_keys')
-        .select('*')
-        .eq('key', licenseKey.toUpperCase())
-        .single();
+      const { data, error } = await supabase.rpc('validate_license_key', {
+        license_key: licenseKey.trim()
+      });
 
-      if (error || !license) {
-        setLicenseError('Invalid license key');
+      if (error) {
+        setLicenseError('Error validating license key');
         setLoading(false);
         return;
       }
 
-      if (license.status !== 'active') {
-        setLicenseError('This license key is not active');
-        setLoading(false);
-        return;
-      }
+      const result = data as { valid: boolean; error?: string; plan?: string; assigned?: boolean };
 
-      if (license.expires_at && new Date(license.expires_at) < new Date()) {
-        setLicenseError('This license key has expired');
+      if (!result.valid) {
+        setLicenseError(result.error || 'Invalid license key');
         setLoading(false);
         return;
       }
@@ -98,25 +91,9 @@ const LicenseAuth = () => {
         
         // After login, activate license if not already activated
         if (validatedLicense) {
-          const { data: existingLicense } = await supabase
-            .from('license_keys')
-            .select('user_id')
-            .eq('key', validatedLicense)
-            .single();
-
-          if (existingLicense && !existingLicense.user_id) {
-            // Get current user
-            const { data: { user: currentUser } } = await supabase.auth.getUser();
-            if (currentUser) {
-              await supabase
-                .from('license_keys')
-                .update({
-                  user_id: currentUser.id,
-                  activated_at: new Date().toISOString(),
-                })
-                .eq('key', validatedLicense);
-            }
-          }
+          await supabase.rpc('activate_license_key', {
+            license_key: validatedLicense
+          });
         }
 
         toast({
