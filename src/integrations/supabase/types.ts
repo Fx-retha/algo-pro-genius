@@ -160,6 +160,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_license_key: { Args: { license_key: string }; Returns: Json }
       generate_license_key: { Args: never; Returns: string }
       generate_mentor_id: { Args: never; Returns: string }
       has_role: {
@@ -169,6 +170,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_license_key: { Args: { license_key: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"
