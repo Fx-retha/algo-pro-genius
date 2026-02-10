@@ -6,26 +6,22 @@ import { PairsModal } from './PairsModal';
 import { LogsModal } from './LogsModal';
 import { MetatraderSettings } from './MetatraderSettings';
 import { BotSettings } from './BotSettings';
-import { useAuth } from '@/hooks/useAuth';
-import { useLicense } from '@/hooks/useLicense';
-import { Info, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Info, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 type Tab = 'home' | 'metatrader' | 'settings';
 
 export function TradingDashboard() {
-  const { user, signOut } = useAuth();
-  const { license } = useLicense();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [pairsOpen, setPairsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
 
-  const getDisplayName = () => {
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
-    return 'Trader';
+  const handleBackHome = () => {
+    localStorage.removeItem('validated_license_key');
+    navigate('/');
   };
 
   return (
@@ -37,13 +33,14 @@ export function TradingDashboard() {
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-2">
-            <span className="font-display font-semibold text-foreground">{getDisplayName()}</span>
+            <span className="font-display font-semibold text-foreground">Trader</span>
             <button className="w-6 h-6 rounded-full border border-border flex items-center justify-center">
               <Info className="h-3 w-3 text-muted-foreground" />
             </button>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="h-4 w-4" />
+          <Button variant="ghost" size="sm" onClick={handleBackHome}>
+            <Home className="h-4 w-4 mr-1" />
+            Home
           </Button>
         </div>
       </header>
