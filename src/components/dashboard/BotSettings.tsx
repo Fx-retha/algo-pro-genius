@@ -1,22 +1,35 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Settings, Palette, Bell, Shield, Volume2 } from 'lucide-react';
+import { Settings, Palette, Bell, Volume2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function BotSettings() {
-  const [riskLevel, setRiskLevel] = useState([2]);
-  const [lotSize, setLotSize] = useState([0.01]);
+  const [riskLevel, setRiskLevel] = useState('2');
+  const [lotSize, setLotSize] = useState('0.01');
+  const [maxTrades, setMaxTrades] = useState('5');
+  const [stopLoss, setStopLoss] = useState('50');
+  const [takeProfit, setTakeProfit] = useState('100');
   const [notifications, setNotifications] = useState(true);
   const [soundAlerts, setSoundAlerts] = useState(true);
   const [autoTrade, setAutoTrade] = useState(true);
   const [theme, setTheme] = useState('cyberpunk');
 
   const handleSave = () => {
+    const lot = parseFloat(lotSize);
+    const risk = parseFloat(riskLevel);
+    if (isNaN(lot) || lot < 0.01 || lot > 100) {
+      toast.error('Lot size must be between 0.01 and 100');
+      return;
+    }
+    if (isNaN(risk) || risk < 0.5 || risk > 10) {
+      toast.error('Risk level must be between 0.5% and 10%');
+      return;
+    }
     toast.success('Settings saved successfully!');
   };
 
@@ -35,40 +48,80 @@ export function BotSettings() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <Label>Risk Level</Label>
-              <span className="text-sm text-primary font-semibold">{riskLevel[0]}%</span>
+        <CardContent className="space-y-5">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Risk Level (%)</Label>
+              <Input
+                type="number"
+                value={riskLevel}
+                onChange={(e) => setRiskLevel(e.target.value)}
+                min="0.5"
+                max="10"
+                step="0.5"
+                placeholder="e.g. 2"
+              />
+              <p className="text-xs text-muted-foreground">Max risk per trade (0.5–10%)</p>
             </div>
-            <Slider
-              value={riskLevel}
-              onValueChange={setRiskLevel}
-              max={10}
-              min={0.5}
-              step={0.5}
-              className="w-full"
-            />
-            <p className="text-xs text-muted-foreground">Maximum risk per trade as % of balance</p>
-          </div>
 
-          <div className="space-y-3">
-            <div className="flex justify-between">
+            <div className="space-y-2">
               <Label>Lot Size</Label>
-              <span className="text-sm text-primary font-semibold">{lotSize[0]}</span>
+              <Input
+                type="number"
+                value={lotSize}
+                onChange={(e) => setLotSize(e.target.value)}
+                min="0.01"
+                max="100"
+                step="0.01"
+                placeholder="e.g. 0.01"
+              />
+              <p className="text-xs text-muted-foreground">Default lot size (0.01–100)</p>
             </div>
-            <Slider
-              value={lotSize}
-              onValueChange={setLotSize}
-              max={1}
-              min={0.01}
-              step={0.01}
-              className="w-full"
-            />
-            <p className="text-xs text-muted-foreground">Default lot size for trades</p>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Stop Loss (pips)</Label>
+              <Input
+                type="number"
+                value={stopLoss}
+                onChange={(e) => setStopLoss(e.target.value)}
+                min="5"
+                max="500"
+                step="5"
+                placeholder="e.g. 50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Take Profit (pips)</Label>
+              <Input
+                type="number"
+                value={takeProfit}
+                onChange={(e) => setTakeProfit(e.target.value)}
+                min="5"
+                max="1000"
+                step="5"
+                placeholder="e.g. 100"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Max Open Trades</Label>
+            <Input
+              type="number"
+              value={maxTrades}
+              onChange={(e) => setMaxTrades(e.target.value)}
+              min="1"
+              max="50"
+              step="1"
+              placeholder="e.g. 5"
+            />
+            <p className="text-xs text-muted-foreground">Maximum simultaneous open trades</p>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
             <div className="space-y-0.5">
               <Label>Auto Trading</Label>
               <p className="text-xs text-muted-foreground">Execute trades automatically</p>
@@ -92,7 +145,7 @@ export function BotSettings() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
             <div className="space-y-0.5">
               <Label>Push Notifications</Label>
               <p className="text-xs text-muted-foreground">Get notified of trades</p>
@@ -100,7 +153,7 @@ export function BotSettings() {
             <Switch checked={notifications} onCheckedChange={setNotifications} />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
             <div className="space-y-0.5">
               <Label>Sound Alerts</Label>
               <p className="text-xs text-muted-foreground">Play sound on new trades</p>

@@ -1,42 +1,45 @@
 import { Button } from "@/components/ui/button";
-import { Check, Zap, Star } from "lucide-react";
+import { Check, Clock, Infinity } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
-    name: "Starter",
-    price: "Free",
-    description: "Perfect for getting started",
+    name: "Days License",
+    price: "Limited",
+    description: "Access for a set number of days",
     features: [
-      "1 Trading Account",
-      "Basic Copy Trading",
-      "Community Support",
-      "Standard Sync Speed",
+      "Time-based access",
+      "Full bot functionality",
+      "All trading pairs",
+      "Community support",
+      "Auto-expires after period",
     ],
-    cta: "Get Started",
+    cta: "Get License",
     popular: false,
-    icon: Zap,
+    icon: Clock,
   },
   {
-    name: "Pro",
-    price: "$49",
-    period: "/month",
-    description: "For serious traders",
+    name: "Lifetime License",
+    price: "Forever",
+    description: "One-time access, never expires",
     features: [
-      "5 Trading Accounts",
-      "Advanced Copy Trading",
-      "Priority Support 24/7",
-      "Instant Sync Speed",
-      "Custom Risk Management",
-      "Analytics Dashboard",
+      "Permanent access",
+      "Full bot functionality",
+      "All trading pairs",
+      "Priority support 24/7",
+      "All future updates",
+      "No recurring fees",
     ],
-    cta: "Start Pro Trial",
+    cta: "Get Lifetime",
     popular: true,
-    icon: Star,
+    icon: Infinity,
   },
 ];
 
 const PricingSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section id="pricing" className="py-24 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
@@ -45,13 +48,13 @@ const PricingSection = () => {
         <ScrollReveal>
           <div className="text-center mb-16">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
-              Pricing
+              Licensing
             </span>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Choose Your <span className="text-primary text-glow">Trading Plan</span>
+              Get Your <span className="text-primary text-glow">License Key</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Start free and scale as you grow. All plans include core features.
+              Choose between a time-limited or lifetime license. All licenses are generated and managed by your mentor.
             </p>
           </div>
         </ScrollReveal>
@@ -69,7 +72,7 @@ const PricingSection = () => {
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="bg-gradient-to-r from-primary to-accent px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-primary-foreground">
-                      Most Popular
+                      Best Value
                     </span>
                   </div>
                 )}
@@ -85,9 +88,6 @@ const PricingSection = () => {
 
                 <div className="mb-4">
                   <span className="font-display text-4xl font-bold">{plan.price}</span>
-                  {plan.period && (
-                    <span className="text-muted-foreground">{plan.period}</span>
-                  )}
                 </div>
 
                 <p className="text-muted-foreground mb-6">{plan.description}</p>
@@ -109,6 +109,7 @@ const PricingSection = () => {
                   variant={plan.popular ? "hero" : "outline"}
                   size="lg"
                   className="w-full"
+                  onClick={() => navigate('/license')}
                 >
                   {plan.cta}
                 </Button>

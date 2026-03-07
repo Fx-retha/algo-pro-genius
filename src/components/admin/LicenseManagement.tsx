@@ -31,8 +31,8 @@ export function LicenseManagement() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newLicensePlan, setNewLicensePlan] = useState<string>('basic');
-  const [expiresIn, setExpiresIn] = useState<string>('365');
+  const [newLicensePlan, setNewLicensePlan] = useState<string>('days');
+  const [expiresIn, setExpiresIn] = useState<string>('30');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const fetchLicenses = async () => {
@@ -68,7 +68,7 @@ export function LicenseManagement() {
     
     setCreating(true);
     const key = generateLicenseKey();
-    const expiresAt = expiresIn ? new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString() : null;
+    const expiresAt = newLicensePlan === 'lifetime' ? null : (expiresIn ? new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString() : null);
 
     const { error } = await supabase
       .from('license_keys')
@@ -154,21 +154,23 @@ export function LicenseManagement() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="basic">Basic</SelectItem>
-                    <SelectItem value="pro">Pro</SelectItem>
-                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                    <SelectItem value="days">Days License</SelectItem>
+                    <SelectItem value="lifetime">Lifetime License</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Expires In (days)</Label>
-                <Input
-                  type="number"
-                  value={expiresIn}
-                  onChange={(e) => setExpiresIn(e.target.value)}
-                  placeholder="Leave empty for no expiry"
-                />
-              </div>
+              {newLicensePlan === 'days' && (
+                <div className="space-y-2">
+                  <Label>Expires In (days)</Label>
+                  <Input
+                    type="number"
+                    value={expiresIn}
+                    onChange={(e) => setExpiresIn(e.target.value)}
+                    placeholder="Number of days"
+                    min="1"
+                  />
+                </div>
+              )}
               <Button onClick={createLicense} disabled={creating} className="w-full">
                 {creating ? (
                   <>
