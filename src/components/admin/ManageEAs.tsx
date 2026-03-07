@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Plus, Download, Trash2, Edit, Bot, Zap, TrendingUp, Shield } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Code, Plus, Download, Trash2, Edit, Bot, Zap, TrendingUp, Shield, UserPlus, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
 type EAMode = 'aggressive' | 'conservative' | 'scalping' | 'swing';
 
@@ -18,6 +20,7 @@ interface EA {
   downloads: number;
   status: 'active' | 'inactive';
   mode: EAMode;
+  assignedUsers: string[];
 }
 
 const modeConfig: Record<EAMode, { label: string; icon: React.ReactNode; color: string; description: string }> = {
@@ -48,12 +51,15 @@ const modeConfig: Record<EAMode, { label: string; icon: React.ReactNode; color: 
 };
 
 const defaultEAs: EA[] = [
-  { id: '1', name: 'Code Base Scalper', version: '1.0.0', platform: 'Both', downloads: 0, status: 'active', mode: 'scalping' },
+  { id: '1', name: 'Code Base Scalper', version: '1.0.0', platform: 'Both', downloads: 0, status: 'active', mode: 'scalping', assignedUsers: [] },
 ];
 
 export function ManageEAs() {
   const [eas, setEAs] = useState<EA[]>(defaultEAs);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedEA, setSelectedEA] = useState<EA | null>(null);
+  const [assignEmail, setAssignEmail] = useState('');
   const [newEA, setNewEA] = useState({ name: '', version: '1.0.0', platform: 'Both' as EA['platform'], mode: 'conservative' as EAMode });
 
   const handleAddEA = () => {
@@ -66,18 +72,42 @@ export function ManageEAs() {
       downloads: 0,
       status: 'active',
       mode: newEA.mode,
+      assignedUsers: [],
     };
     setEAs([...eas, ea]);
     setNewEA({ name: '', version: '1.0.0', platform: 'Both', mode: 'conservative' });
     setDialogOpen(false);
+    toast.success(`${ea.name} added successfully`);
   };
 
   const handleDelete = (id: string) => {
     setEAs(eas.filter(ea => ea.id !== id));
+    toast.success('EA removed');
   };
 
   const toggleStatus = (id: string) => {
     setEAs(eas.map(ea => ea.id === id ? { ...ea, status: ea.status === 'active' ? 'inactive' : 'active' } : ea));
+  };
+
+  const handleAssign = () => {
+    if (!assignEmail.trim() || !selectedEA) return;
+    setEAs(eas.map(ea => 
+      ea.id === selectedEA.id 
+        ? { ...ea, assignedUsers: [...ea.assignedUsers, assignEmail.trim()] } 
+        : ea
+    ));
+    toast.success(`EA assigned to ${assignEmail}`);
+    setAssignEmail('');
+    setAssignDialogOpen(false);
+  };
+
+  const removeAssignment = (eaId: string, email: string) => {
+    setEAs(eas.map(ea =>
+      ea.id === eaId
+        ? { ...ea, assignedUsers: ea.assignedUsers.filter(u => u !== email) }
+        : ea
+    ));
+    toast.success(`Assignment removed for ${email}`);
   };
 
   return (
@@ -85,7 +115,7 @@ export function ManageEAs() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-display font-bold">Manage EAs</h1>
-          <p className="text-muted-foreground">Manage your Expert Advisors and trading bots</p>
+          <p className="text-muted-foreground">Manage Expert Advisors and assign them to mentors/users</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -145,6 +175,52 @@ export function ManageEAs() {
         </Dialog>
       </div>
 
+      {/* Assign EA Dialog */}
+      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign EA to User</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Assign <span className="font-semibold text-foreground">{selectedEA?.name}</span> to a user by email
+            </p>
+            <div className="space-y-2">
+              <Label>User Email</Label>
+              <Input
+                placeholder="user@example.com"
+                value={assignEmail}
+                onChange={e => setAssignEmail(e.target.value)}
+              />
+            </div>
+            <Button className="w-full" onClick={handleAssign}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              Assign EA
+            </Button>
+            {selectedEA && selectedEA.assignedUsers.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-border">
+                <Label className="text-sm">Currently Assigned</Label>
+                <div className="space-y-1.5">
+                  {selectedEA.assignedUsers.map(email => (
+                    <div key={email} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-muted/50">
+                      <span className="text-sm">{email}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-destructive hover:text-destructive"
+                        onClick={() => removeAssignment(selectedEA.id, email)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-4">
         {eas.map((ea) => {
           const mode = modeConfig[ea.mode];
@@ -173,6 +249,12 @@ export function ManageEAs() {
                             {mode.label}
                           </span>
                         </Badge>
+                        {ea.assignedUsers.length > 0 && (
+                          <Badge variant="outline" className="text-primary border-primary/30">
+                            <Users className="h-3 w-3 mr-1" />
+                            {ea.assignedUsers.length} assigned
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -182,6 +264,14 @@ export function ManageEAs() {
                       <p className="text-xs text-muted-foreground">Downloads</p>
                     </div>
                     <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Assign to user"
+                        onClick={() => { setSelectedEA(ea); setAssignDialogOpen(true); }}
+                      >
+                        <UserPlus className="h-4 w-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" title="Download">
                         <Download className="h-4 w-4" />
                       </Button>
