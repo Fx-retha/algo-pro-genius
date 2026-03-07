@@ -31,8 +31,8 @@ export function LicenseManagement() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newLicensePlan, setNewLicensePlan] = useState<string>('basic');
-  const [expiresIn, setExpiresIn] = useState<string>('365');
+  const [newLicensePlan, setNewLicensePlan] = useState<string>('days');
+  const [expiresIn, setExpiresIn] = useState<string>('30');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const fetchLicenses = async () => {
@@ -154,20 +154,23 @@ export function LicenseManagement() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="basic">Basic</SelectItem>
-                    <SelectItem value="pro">Pro</SelectItem>
-                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                    <SelectItem value="days">Days License</SelectItem>
+                    <SelectItem value="lifetime">Lifetime License</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {newLicensePlan === 'days' && (
               <div className="space-y-2">
                 <Label>Expires In (days)</Label>
                 <Input
                   type="number"
                   value={expiresIn}
                   onChange={(e) => setExpiresIn(e.target.value)}
-                  placeholder="Leave empty for no expiry"
+                  placeholder="Number of days"
+                  min="1"
                 />
+              </div>
+              )}
               </div>
               <Button onClick={createLicense} disabled={creating} className="w-full">
                 {creating ? (
