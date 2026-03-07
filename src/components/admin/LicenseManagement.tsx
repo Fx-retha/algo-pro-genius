@@ -160,18 +160,17 @@ export function LicenseManagement() {
                 </Select>
               </div>
               {newLicensePlan === 'days' && (
-              <div className="space-y-2">
-                <Label>Expires In (days)</Label>
-                <Input
-                  type="number"
-                  value={expiresIn}
-                  onChange={(e) => setExpiresIn(e.target.value)}
-                  placeholder="Number of days"
-                  min="1"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label>Expires In (days)</Label>
+                  <Input
+                    type="number"
+                    value={expiresIn}
+                    onChange={(e) => setExpiresIn(e.target.value)}
+                    placeholder="Number of days"
+                    min="1"
+                  />
+                </div>
               )}
-              </div>
               <Button onClick={createLicense} disabled={creating} className="w-full">
                 {creating ? (
                   <>
