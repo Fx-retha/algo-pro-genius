@@ -68,7 +68,7 @@ export function LicenseManagement() {
     
     setCreating(true);
     const key = generateLicenseKey();
-    const expiresAt = expiresIn ? new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString() : null;
+    const expiresAt = newLicensePlan === 'lifetime' ? null : (expiresIn ? new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString() : null);
 
     const { error } = await supabase
       .from('license_keys')
