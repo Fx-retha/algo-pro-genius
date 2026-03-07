@@ -10,5 +10,12 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  return (
+    <NextThemesProvider
+      {...props}
+      themes={['light', 'dark', 'system', 'cyberpunk', 'minimal', 'minimal-dark']}
+    >
+      {children}
+    </NextThemesProvider>
+  );
 }
