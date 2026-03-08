@@ -12,7 +12,6 @@ export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationPro
   const tabs = [
     { id: 'home' as Tab, label: 'Home', icon: Home },
     { id: 'metatrader' as Tab, label: 'Metatrader', icon: Database },
-    { id: 'vps' as Tab, label: 'VPS', icon: Server },
     { id: 'settings' as Tab, label: 'Settings', icon: Settings },
   ];
 

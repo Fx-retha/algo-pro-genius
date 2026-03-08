@@ -71,11 +71,8 @@ export function TradingDashboard() {
             </div>
           )}
 
-          {activeTab === 'vps' && (
-            <div className="py-6">
-              <VpsSettings />
-            </div>
-          )}
+
+
 
           {activeTab === 'settings' && (
             <div className="py-6">
