@@ -1,7 +1,7 @@
-import { Home, Database, Settings } from 'lucide-react';
+import { Home, Database, Server, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Tab = 'home' | 'metatrader' | 'settings';
+type Tab = 'home' | 'metatrader' | 'vps' | 'settings';
 
 interface BottomNavigationProps {
   activeTab: Tab;
@@ -12,6 +12,7 @@ export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationPro
   const tabs = [
     { id: 'home' as Tab, label: 'Home', icon: Home },
     { id: 'metatrader' as Tab, label: 'Metatrader', icon: Database },
+    { id: 'vps' as Tab, label: 'VPS', icon: Server },
     { id: 'settings' as Tab, label: 'Settings', icon: Settings },
   ];
 
