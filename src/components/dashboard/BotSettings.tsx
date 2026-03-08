@@ -4,11 +4,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Settings, Bell, Palette, Check } from 'lucide-react';
+import { Settings, Bell, Palette, LayoutGrid, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
 
-const interfaceThemes = [
+const themes = [
   { id: 'dark', label: 'Default Dark', description: 'Clean dark interface', color: 'hsl(320 100% 60%)' },
   { id: 'cyberpunk', label: 'Cyberpunk Neon', description: 'Intense neon aesthetics', color: 'hsl(180 100% 50%)' },
   { id: 'minimal', label: 'Minimal Light', description: 'Clean & sophisticated', color: 'hsl(0 0% 15%)' },
@@ -16,8 +16,16 @@ const interfaceThemes = [
   { id: 'light', label: 'Light Mode', description: 'Bright & clear', color: 'hsl(320 100% 50%)' },
 ];
 
+const interfaces = [
+  { id: 'default', label: 'Standard', description: 'Default card layout', shape: 'rounded-xl' },
+  { id: 'compact', label: 'Compact', description: 'Dense, data-rich view', shape: 'rounded-md' },
+  { id: 'terminal', label: 'Terminal', description: 'CLI-inspired sharp edges', shape: 'rounded-none' },
+  { id: 'pill', label: 'Pill', description: 'Soft rounded panels', shape: 'rounded-3xl' },
+];
+
 export function BotSettings() {
   const { theme, setTheme } = useTheme();
+  const [activeInterface, setActiveInterface] = useState('default');
   const [riskLevel, setRiskLevel] = useState('2');
   const [lotSize, setLotSize] = useState('0.01');
   const [maxTrades, setMaxTrades] = useState('5');
@@ -43,7 +51,51 @@ export function BotSettings() {
 
   return (
     <div className="space-y-6 pb-20">
-      {/* Interface / Theme Selection */}
+      {/* Interface / Layout Selection */}
+      <Card className="border-border bg-card/50 backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+              <LayoutGrid className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="font-display text-lg">Interface</CardTitle>
+              <CardDescription>Choose your dashboard layout style</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3">
+            {interfaces.map((iface) => (
+              <button
+                key={iface.id}
+                onClick={() => {
+                  setActiveInterface(iface.id);
+                  toast.success(`Interface set to ${iface.label}`);
+                }}
+                className={`flex flex-col items-center gap-2 p-4 border transition-all ${iface.shape} ${
+                  activeInterface === iface.id
+                    ? 'border-primary bg-primary/10 ring-1 ring-primary/50'
+                    : 'border-border bg-muted/20 hover:bg-muted/40'
+                }`}
+              >
+                {/* Shape preview box */}
+                <div
+                  className={`w-full h-12 border border-border/50 bg-muted/30 flex items-center justify-center ${iface.shape}`}
+                >
+                  {activeInterface === iface.id && <Check className="h-4 w-4 text-primary" />}
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-foreground">{iface.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{iface.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Theme Selection */}
       <Card className="border-border bg-card/50 backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center gap-3">
@@ -51,14 +103,14 @@ export function BotSettings() {
               <Palette className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="font-display text-lg">Interface</CardTitle>
-              <CardDescription>Choose your dashboard look</CardDescription>
+              <CardTitle className="font-display text-lg">Theme</CardTitle>
+              <CardDescription>Choose your color theme</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-3">
-            {interfaceThemes.map((t) => (
+            {themes.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTheme(t.id)}
@@ -101,28 +153,12 @@ export function BotSettings() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Risk Level (%)</Label>
-              <Input
-                type="number"
-                value={riskLevel}
-                onChange={(e) => setRiskLevel(e.target.value)}
-                min="0.5"
-                max="10"
-                step="0.5"
-                placeholder="e.g. 2"
-              />
+              <Input type="number" value={riskLevel} onChange={(e) => setRiskLevel(e.target.value)} min="0.5" max="10" step="0.5" placeholder="e.g. 2" />
               <p className="text-xs text-muted-foreground">0.5–10%</p>
             </div>
             <div className="space-y-2">
               <Label>Lot Size</Label>
-              <Input
-                type="number"
-                value={lotSize}
-                onChange={(e) => setLotSize(e.target.value)}
-                min="0.01"
-                max="100"
-                step="0.01"
-                placeholder="e.g. 0.01"
-              />
+              <Input type="number" value={lotSize} onChange={(e) => setLotSize(e.target.value)} min="0.01" max="100" step="0.01" placeholder="e.g. 0.01" />
               <p className="text-xs text-muted-foreground">0.01–100</p>
             </div>
           </div>
@@ -130,41 +166,17 @@ export function BotSettings() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Stop Loss (pips)</Label>
-              <Input
-                type="number"
-                value={stopLoss}
-                onChange={(e) => setStopLoss(e.target.value)}
-                min="5"
-                max="500"
-                step="5"
-                placeholder="e.g. 50"
-              />
+              <Input type="number" value={stopLoss} onChange={(e) => setStopLoss(e.target.value)} min="5" max="500" step="5" placeholder="e.g. 50" />
             </div>
             <div className="space-y-2">
               <Label>Take Profit (pips)</Label>
-              <Input
-                type="number"
-                value={takeProfit}
-                onChange={(e) => setTakeProfit(e.target.value)}
-                min="5"
-                max="1000"
-                step="5"
-                placeholder="e.g. 100"
-              />
+              <Input type="number" value={takeProfit} onChange={(e) => setTakeProfit(e.target.value)} min="5" max="1000" step="5" placeholder="e.g. 100" />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>Max Open Trades</Label>
-            <Input
-              type="number"
-              value={maxTrades}
-              onChange={(e) => setMaxTrades(e.target.value)}
-              min="1"
-              max="50"
-              step="1"
-              placeholder="e.g. 5"
-            />
+            <Input type="number" value={maxTrades} onChange={(e) => setMaxTrades(e.target.value)} min="1" max="50" step="1" placeholder="e.g. 5" />
           </div>
 
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
