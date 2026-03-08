@@ -1,7 +1,7 @@
-import { Home, Database, Server, Settings } from 'lucide-react';
+import { Home, Database, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Tab = 'home' | 'metatrader' | 'vps' | 'settings';
+type Tab = 'home' | 'metatrader' | 'settings';
 
 interface BottomNavigationProps {
   activeTab: Tab;
