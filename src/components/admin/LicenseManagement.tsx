@@ -41,9 +41,16 @@ export function LicenseManagement() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      toast({
+        title: 'Unable to load licenses',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else if (data) {
       setLicenses(data as License[]);
     }
+
     setLoading(false);
   };
 
@@ -51,49 +58,81 @@ export function LicenseManagement() {
     fetchLicenses();
   }, []);
 
-  const generateLicenseKey = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let segment = 0; segment < 4; segment++) {
-      if (segment > 0) result += '-';
-      for (let i = 0; i < 4; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-    }
-    return result;
-  };
-
   const createLicense = async () => {
-    if (!user) return;
-    
-    setCreating(true);
-    const key = generateLicenseKey();
-    const expiresAt = newLicensePlan === 'lifetime' ? null : (expiresIn ? new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString() : null);
-
-    const { error } = await supabase
-      .from('license_keys')
-      .insert({
-        key,
-        created_by: user.id,
-        plan: newLicensePlan,
-        expires_at: expiresAt,
-      });
-
-    if (error) {
+    if (!user) {
       toast({
-        title: 'Error',
-        description: error.message,
+        title: 'Sign in required',
+        description: 'Please sign in to generate licenses.',
         variant: 'destructive',
       });
-    } else {
-      toast({
-        title: 'License Created',
-        description: `New ${newLicensePlan} license key generated successfully.`,
-      });
-      setDialogOpen(false);
-      fetchLicenses();
+      return;
     }
-    setCreating(false);
+
+    if (newLicensePlan === 'days') {
+      const parsedDays = Number.parseInt(expiresIn, 10);
+      if (!Number.isFinite(parsedDays) || parsedDays < 1) {
+        toast({
+          title: 'Invalid expiry',
+          description: 'Enter a valid number of days (minimum 1).',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
+    setCreating(true);
+
+    try {
+      const expiresAt =
+        newLicensePlan === 'lifetime'
+          ? null
+          : new Date(Date.now() + Number.parseInt(expiresIn, 10) * 24 * 60 * 60 * 1000).toISOString();
+
+      let lastError: string | null = null;
+
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const { data: generatedKey, error: keyError } = await supabase.rpc('generate_license_key');
+
+        if (keyError || !generatedKey) {
+          lastError = keyError?.message || 'Failed to generate license key';
+          break;
+        }
+
+        const { error: insertError } = await supabase
+          .from('license_keys')
+          .insert({
+            key: generatedKey,
+            created_by: user.id,
+            plan: newLicensePlan,
+            expires_at: expiresAt,
+          });
+
+        if (!insertError) {
+          toast({
+            title: 'License Created',
+            description: `New ${newLicensePlan} license key generated successfully.`,
+          });
+          setDialogOpen(false);
+          await fetchLicenses();
+          return;
+        }
+
+        if (insertError.code !== '23505') {
+          lastError = insertError.message;
+          break;
+        }
+
+        lastError = 'Key collision detected. Retrying...';
+      }
+
+      toast({
+        title: 'Error',
+        description: lastError || 'Unable to generate license key after multiple attempts.',
+        variant: 'destructive',
+      });
+    } finally {
+      setCreating(false);
+    }
   };
 
   const revokeLicense = async (id: string) => {
