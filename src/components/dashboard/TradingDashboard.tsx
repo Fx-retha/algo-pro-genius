@@ -6,13 +6,12 @@ import { PairsModal } from './PairsModal';
 import { LogsModal } from './LogsModal';
 import { MetatraderSettings } from './MetatraderSettings';
 import { BotSettings } from './BotSettings';
-import { VpsSettings } from './VpsSettings';
 import { useNavigate } from 'react-router-dom';
 import { Info, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-type Tab = 'home' | 'metatrader' | 'vps' | 'settings';
+type Tab = 'home' | 'metatrader' | 'settings';
 
 export function TradingDashboard() {
   const navigate = useNavigate();
@@ -72,11 +71,8 @@ export function TradingDashboard() {
             </div>
           )}
 
-          {activeTab === 'vps' && (
-            <div className="py-6">
-              <VpsSettings />
-            </div>
-          )}
+
+
 
           {activeTab === 'settings' && (
             <div className="py-6">
