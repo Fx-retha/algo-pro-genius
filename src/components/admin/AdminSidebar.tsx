@@ -45,7 +45,8 @@ const menuSections = [
     label: 'MANAGEMENT',
     items: [
       { id: 'profile', label: 'My Users', icon: Users },
-      { id: 'appearance', label: 'Licences', icon: Shield },
+      { id: 'appearance', label: 'Theme', icon: Palette },
+      { id: 'user-management', label: 'Licences', icon: Shield },
     ],
   },
   {
