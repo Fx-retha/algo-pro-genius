@@ -19,8 +19,7 @@ import {
   Smile,
   SlidersHorizontal,
   RefreshCw,
-  Shield,
-  Palette
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
