@@ -62,6 +62,8 @@ export default function Admin() {
         return <ProfileSettings />;
       case 'appearance':
         return <AppearanceSettings />;
+      case 'user-management':
+        return <UserManagement />;
       case 'my-website':
         return <MyWebsite />;
       default:
