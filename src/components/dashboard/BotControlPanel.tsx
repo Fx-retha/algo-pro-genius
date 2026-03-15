@@ -114,7 +114,7 @@ export function BotControlPanel({ botName = "CODE BASE ALGO PRO", onPairsClick, 
         className="px-4 py-2 rounded-full border border-primary/30 bg-primary/10"
       >
         <span className="text-sm text-muted-foreground">Powered by </span>
-        <span className="text-sm font-semibold text-primary">Algo Pro</span>
+        <span className="text-sm font-semibold text-primary">Code Base</span>
       </motion.div>
 
       {/* Status Indicator */}
