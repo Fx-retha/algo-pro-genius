@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemePreference } from '@/hooks/useThemePreference';
 import { 
@@ -14,7 +14,12 @@ import {
   X,
   Moon,
   Sun,
-  Users
+  Users,
+  TrendingUp,
+  Smile,
+  SlidersHorizontal,
+  RefreshCw,
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -26,15 +31,29 @@ interface AdminSidebarProps {
   onToggle: () => void;
 }
 
-const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'mentor-applications', label: 'Mentor Applications', icon: Users },
-  { id: 'manage-eas', label: 'Manage EAs', icon: Code },
-  { id: 'licenses', label: 'Licenses', icon: Key },
-  { id: 'setup-methods', label: 'Setup Methods', icon: Monitor },
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'appearance', label: 'Appearance', icon: Palette },
-  { id: 'my-website', label: 'My Website', icon: Globe },
+const menuSections = [
+  {
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { id: 'licenses', label: 'Generate Key', icon: Key },
+      { id: 'manage-eas', label: 'Manage EAs', icon: Smile },
+      { id: 'mentor-applications', label: 'Key Stats', icon: TrendingUp },
+      { id: 'setup-methods', label: 'Control Bot', icon: SlidersHorizontal },
+    ],
+  },
+  {
+    label: 'MANAGEMENT',
+    items: [
+      { id: 'profile', label: 'My Users', icon: Users },
+      { id: 'appearance', label: 'Licences', icon: Shield },
+    ],
+  },
+  {
+    label: 'SETTINGS',
+    items: [
+      { id: 'my-website', label: 'My Website', icon: Globe },
+    ],
+  },
 ];
 
 export function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle }: AdminSidebarProps) {
@@ -43,12 +62,8 @@ export function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle }: Admin
   const navigate = useNavigate();
 
   const getDisplayName = () => {
-    if (user?.user_metadata?.full_name) {
-      return user.user_metadata.full_name;
-    }
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
+    if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
+    if (user?.email) return user.email.split('@')[0];
     return 'Admin';
   };
 
@@ -88,11 +103,7 @@ export function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle }: Admin
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
               <Button variant="ghost" size="icon" className="lg:hidden" onClick={onToggle}>
                 <X className="h-5 w-5" />
@@ -101,24 +112,36 @@ export function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle }: Admin
           </div>
 
           {/* Menu Items */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onTabChange(item.id);
-                  if (window.innerWidth < 1024) onToggle();
-                }}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors",
-                  activeTab === item.id
-                    ? "bg-muted text-foreground font-medium"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
+            {menuSections.map((section, sIdx) => (
+              <div key={sIdx}>
+                {section.label && (
+                  <div className="flex items-center gap-2 mb-2 px-2">
+                    <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{section.label}</span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
                 )}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </button>
+                <div className="space-y-1">
+                  {section.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onTabChange(item.id);
+                        if (window.innerWidth < 1024) onToggle();
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors",
+                        activeTab === item.id
+                          ? "bg-primary text-primary-foreground font-medium"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      )}
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
 
@@ -144,7 +167,7 @@ export function AdminSidebar({ activeTab, onTabChange, isOpen, onToggle }: Admin
       <Button 
         variant="outline" 
         size="icon"
-        className="fixed top-4 left-4 z-30 lg:hidden"
+        className="fixed top-4 right-4 z-30 lg:hidden"
         onClick={onToggle}
       >
         <Menu className="h-5 w-5" />
