@@ -29,21 +29,7 @@ export function TradingDashboard() {
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
       
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="flex items-center justify-between px-4 h-14">
-          <div className="flex items-center gap-2">
-            <span className="font-display font-semibold text-foreground">Trader</span>
-            <button className="w-6 h-6 rounded-full border border-border flex items-center justify-center">
-              <Info className="h-3 w-3 text-muted-foreground" />
-            </button>
-          </div>
-          <Button variant="ghost" size="sm" onClick={handleBackHome}>
-            <Home className="h-4 w-4 mr-1" />
-            Home
-          </Button>
-        </div>
-      </header>
+      {/* Header removed per user request */}
 
       {/* Main Content */}
       <main className="pb-20">

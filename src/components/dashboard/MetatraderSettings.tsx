@@ -111,6 +111,29 @@ export function MetatraderSettings() {
                 <SelectItem value="deriv">Deriv</SelectItem>
                 <SelectItem value="fbs">FBS</SelectItem>
                 <SelectItem value="octafx">OctaFX</SelectItem>
+                <SelectItem value="fxtm">FXTM</SelectItem>
+                <SelectItem value="hotforex">HFM (HotForex)</SelectItem>
+                <SelectItem value="tickmill">Tickmill</SelectItem>
+                <SelectItem value="roboforex">RoboForex</SelectItem>
+                <SelectItem value="avatrade">AvaTrade</SelectItem>
+                <SelectItem value="admiralmarkets">Admiral Markets</SelectItem>
+                <SelectItem value="oanda">OANDA</SelectItem>
+                <SelectItem value="fxcm">FXCM</SelectItem>
+                <SelectItem value="saxobank">Saxo Bank</SelectItem>
+                <SelectItem value="igmarkets">IG Markets</SelectItem>
+                <SelectItem value="cmcmarkets">CMC Markets</SelectItem>
+                <SelectItem value="plus500">Plus500</SelectItem>
+                <SelectItem value="etoro">eToro</SelectItem>
+                <SelectItem value="fpmarkets">FP Markets</SelectItem>
+                <SelectItem value="bdswiss">BDSwiss</SelectItem>
+                <SelectItem value="instaforex">InstaForex</SelectItem>
+                <SelectItem value="liteforex">LiteFinance</SelectItem>
+                <SelectItem value="justmarkets">JustMarkets</SelectItem>
+                <SelectItem value="alpari">Alpari</SelectItem>
+                <SelectItem value="vantage">Vantage</SelectItem>
+                <SelectItem value="axi">Axi</SelectItem>
+                <SelectItem value="blackbull">BlackBull Markets</SelectItem>
+                <SelectItem value="eightcap">Eightcap</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
