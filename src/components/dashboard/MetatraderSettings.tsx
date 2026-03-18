@@ -55,6 +55,7 @@ export function MetatraderSettings() {
   const [showPassword, setShowPassword] = useState(false);
   const [server, setServer] = useState('');
   const [broker, setBroker] = useState('');
+  const [brokerOpen, setBrokerOpen] = useState(false);
   const [connected, setConnected] = useState(false);
 
   const handleConnect = () => {
