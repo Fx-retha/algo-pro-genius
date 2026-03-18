@@ -136,45 +136,49 @@ export function MetatraderSettings() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="broker">Broker</Label>
-            <Select value={broker} onValueChange={setBroker}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select your broker" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="exness">Exness</SelectItem>
-                <SelectItem value="xm">XM</SelectItem>
-                <SelectItem value="icmarkets">IC Markets</SelectItem>
-                <SelectItem value="fxpro">FXPro</SelectItem>
-                <SelectItem value="pepperstone">Pepperstone</SelectItem>
-                <SelectItem value="deriv">Deriv</SelectItem>
-                <SelectItem value="fbs">FBS</SelectItem>
-                <SelectItem value="octafx">OctaFX</SelectItem>
-                <SelectItem value="fxtm">FXTM</SelectItem>
-                <SelectItem value="hotforex">HFM (HotForex)</SelectItem>
-                <SelectItem value="tickmill">Tickmill</SelectItem>
-                <SelectItem value="roboforex">RoboForex</SelectItem>
-                <SelectItem value="avatrade">AvaTrade</SelectItem>
-                <SelectItem value="admiralmarkets">Admiral Markets</SelectItem>
-                <SelectItem value="oanda">OANDA</SelectItem>
-                <SelectItem value="fxcm">FXCM</SelectItem>
-                <SelectItem value="saxobank">Saxo Bank</SelectItem>
-                <SelectItem value="igmarkets">IG Markets</SelectItem>
-                <SelectItem value="cmcmarkets">CMC Markets</SelectItem>
-                <SelectItem value="plus500">Plus500</SelectItem>
-                <SelectItem value="etoro">eToro</SelectItem>
-                <SelectItem value="fpmarkets">FP Markets</SelectItem>
-                <SelectItem value="bdswiss">BDSwiss</SelectItem>
-                <SelectItem value="instaforex">InstaForex</SelectItem>
-                <SelectItem value="liteforex">LiteFinance</SelectItem>
-                <SelectItem value="justmarkets">JustMarkets</SelectItem>
-                <SelectItem value="alpari">Alpari</SelectItem>
-                <SelectItem value="vantage">Vantage</SelectItem>
-                <SelectItem value="axi">Axi</SelectItem>
-                <SelectItem value="blackbull">BlackBull Markets</SelectItem>
-                <SelectItem value="eightcap">Eightcap</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover open={brokerOpen} onOpenChange={setBrokerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={brokerOpen}
+                  className="w-full justify-between font-normal"
+                >
+                  {broker
+                    ? BROKERS.find((b) => b.value === broker)?.label
+                    : "Search or select your broker..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search broker..." />
+                  <CommandList>
+                    <CommandEmpty>No broker found.</CommandEmpty>
+                    <CommandGroup>
+                      {BROKERS.map((b) => (
+                        <CommandItem
+                          key={b.value}
+                          value={b.label}
+                          onSelect={() => {
+                            setBroker(b.value);
+                            setBrokerOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              broker === b.value ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {b.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">
