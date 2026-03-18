@@ -4,10 +4,47 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database, Link2, CheckCircle2, XCircle, Eye, EyeOff, Lock } from 'lucide-react';
+import { Database, Link2, CheckCircle2, XCircle, Eye, EyeOff, Lock, Check, ChevronsUpDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+
+const BROKERS = [
+  { value: "exness", label: "Exness" },
+  { value: "xm", label: "XM" },
+  { value: "icmarkets", label: "IC Markets" },
+  { value: "fxpro", label: "FXPro" },
+  { value: "pepperstone", label: "Pepperstone" },
+  { value: "deriv", label: "Deriv" },
+  { value: "fbs", label: "FBS" },
+  { value: "octafx", label: "OctaFX" },
+  { value: "fxtm", label: "FXTM" },
+  { value: "hotforex", label: "HFM (HotForex)" },
+  { value: "tickmill", label: "Tickmill" },
+  { value: "roboforex", label: "RoboForex" },
+  { value: "avatrade", label: "AvaTrade" },
+  { value: "admiralmarkets", label: "Admiral Markets" },
+  { value: "oanda", label: "OANDA" },
+  { value: "fxcm", label: "FXCM" },
+  { value: "saxobank", label: "Saxo Bank" },
+  { value: "igmarkets", label: "IG Markets" },
+  { value: "cmcmarkets", label: "CMC Markets" },
+  { value: "plus500", label: "Plus500" },
+  { value: "etoro", label: "eToro" },
+  { value: "fpmarkets", label: "FP Markets" },
+  { value: "bdswiss", label: "BDSwiss" },
+  { value: "instaforex", label: "InstaForex" },
+  { value: "liteforex", label: "LiteFinance" },
+  { value: "justmarkets", label: "JustMarkets" },
+  { value: "alpari", label: "Alpari" },
+  { value: "vantage", label: "Vantage" },
+  { value: "axi", label: "Axi" },
+  { value: "blackbull", label: "BlackBull Markets" },
+  { value: "eightcap", label: "Eightcap" },
+  { value: "other", label: "Other" },
+];
 
 type Platform = 'mt4' | 'mt5';
 
