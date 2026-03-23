@@ -6,7 +6,6 @@ import { PairsModal } from './PairsModal';
 import { LogsModal } from './LogsModal';
 import { MetatraderSettings } from './MetatraderSettings';
 import { BotSettings } from './BotSettings';
-import { SignalScanner } from './SignalScanner';
 import { VoiceAssistant } from './VoiceAssistant';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -20,21 +19,9 @@ export function TradingDashboard() {
   const [logsOpen, setLogsOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Video background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 w-full h-full object-cover z-0"
-      >
-        <source src="/videos/background.mp4" type="video/mp4" />
-      </video>
-      <div className="fixed inset-0 bg-background/80 z-0" />
-
+    <div className="min-h-screen bg-background relative">
       {/* Main Content */}
-      <main className="pb-20 relative z-10">
+      <main className="pb-20">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, x: 20 }}
@@ -49,7 +36,6 @@ export function TradingDashboard() {
                 onPairsClick={() => setPairsOpen(true)}
                 onLogsClick={() => setLogsOpen(true)}
               />
-              <SignalScanner />
               <RobotList />
             </div>
           )}

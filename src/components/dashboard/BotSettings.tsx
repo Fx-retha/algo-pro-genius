@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Bell, Palette, LayoutGrid, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
+import { ChartScanner } from './ChartScanner';
 
 const themes = [
   { id: 'dark', label: 'Default Dark', description: 'Clean dark interface', color: 'hsl(320 100% 60%)' },
@@ -54,7 +55,8 @@ export function BotSettings() {
 
   return (
     <div className="space-y-6 pb-20">
-      {/* Interface Selection */}
+      {/* Chart Scanner */}
+      <ChartScanner />
       <Card className="border-border bg-card/50 backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center gap-3">
