@@ -86,7 +86,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <Link to="/auth">
+              <Link to="/license-auth">
                 <Button variant="ghost" size="default" className="text-muted-foreground hover:text-primary">
                   Already a member? Sign in
                   <ArrowRight className="w-4 h-4 ml-1" />
