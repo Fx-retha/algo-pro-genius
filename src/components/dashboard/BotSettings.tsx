@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Bell, Palette, LayoutGrid, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
+import { ChartScanner } from './ChartScanner';
 
 const themes = [
   { id: 'dark', label: 'Default Dark', description: 'Clean dark interface', color: 'hsl(320 100% 60%)' },
