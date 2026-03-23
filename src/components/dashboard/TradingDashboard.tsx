@@ -6,9 +6,9 @@ import { PairsModal } from './PairsModal';
 import { LogsModal } from './LogsModal';
 import { MetatraderSettings } from './MetatraderSettings';
 import { BotSettings } from './BotSettings';
+import { SignalScanner } from './SignalScanner';
+import { VoiceAssistant } from './VoiceAssistant';
 import { useNavigate } from 'react-router-dom';
-import { Info, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 type Tab = 'home' | 'metatrader' | 'settings';
@@ -19,20 +19,22 @@ export function TradingDashboard() {
   const [pairsOpen, setPairsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
 
-  const handleBackHome = () => {
-    localStorage.removeItem('validated_license_key');
-    navigate('/');
-  };
-
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
-      
-      {/* Header removed per user request */}
+      {/* Video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/videos/background.mp4" type="video/mp4" />
+      </video>
+      <div className="fixed inset-0 bg-background/80 z-0" />
 
       {/* Main Content */}
-      <main className="pb-20">
+      <main className="pb-20 relative z-10">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, x: 20 }}
@@ -47,6 +49,7 @@ export function TradingDashboard() {
                 onPairsClick={() => setPairsOpen(true)}
                 onLogsClick={() => setLogsOpen(true)}
               />
+              <SignalScanner />
               <RobotList />
             </div>
           )}
@@ -56,9 +59,6 @@ export function TradingDashboard() {
               <MetatraderSettings />
             </div>
           )}
-
-
-
 
           {activeTab === 'settings' && (
             <div className="py-6">
@@ -70,6 +70,9 @@ export function TradingDashboard() {
 
       {/* Bottom Navigation */}
       <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* AI Voice Assistant */}
+      <VoiceAssistant />
 
       {/* Modals */}
       <PairsModal open={pairsOpen} onOpenChange={setPairsOpen} />
