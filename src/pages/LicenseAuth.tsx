@@ -84,11 +84,33 @@ const LicenseAuth = () => {
             <Key className="h-8 w-8 text-primary" />
           </div>
           <h1 className="font-display text-2xl font-bold text-center mb-2">
-            Enter License Key
+            Get Started
           </h1>
-          <p className="text-muted-foreground text-center mb-8">
-            Enter your license key to access the trading platform
+          <p className="text-muted-foreground text-center mb-6">
+            Purchase a license to access the trading platform
           </p>
+
+          {/* PayPal Payment Button */}
+          <a
+            href="https://www.paypal.com/ncp/payment/8ZGHV7WRTVX3N"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-[#0070ba] hover:bg-[#005ea6] text-white font-semibold transition-colors mb-6"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797H9.603c-.564 0-1.04.408-1.13.964L7.076 21.337z"/>
+            </svg>
+            Pay with PayPal
+          </a>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Then enter your key</span>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div>
