@@ -37,16 +37,16 @@ const menuSections = [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'licenses', label: 'Generate Key', icon: Key },
       { id: 'manage-eas', label: 'Manage EAs', icon: Smile },
-      { id: 'mentor-applications', label: 'Key Stats', icon: TrendingUp },
-      { id: 'setup-methods', label: 'Control Bot', icon: SlidersHorizontal },
+      { id: 'mentor-applications', label: 'Mentor Applications', icon: TrendingUp },
+      { id: 'setup-methods', label: 'Setup Methods', icon: SlidersHorizontal },
     ],
   },
   {
     label: 'MANAGEMENT',
     items: [
-      { id: 'profile', label: 'My Users', icon: Users },
+      { id: 'profile', label: 'Profile Settings', icon: Users },
       { id: 'appearance', label: 'Theme', icon: Palette },
-      { id: 'user-management', label: 'Licences', icon: Shield },
+      { id: 'user-management', label: 'User Management', icon: Shield },
     ],
   },
   {
