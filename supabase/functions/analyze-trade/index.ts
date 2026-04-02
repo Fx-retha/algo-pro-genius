@@ -6,38 +6,76 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { symbol, price, volume, trend } = await req.json();
-    
-    console.log("Analyzing trade signal for:", { symbol, price, volume, trend });
+    const { chartImageBase64, symbol } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert algorithmic trading analyst. Analyze trade signals and explain market patterns in a clear, actionable way. 
+    const systemPrompt = `You are an expert technical chart analyst. You will be shown a trading chart screenshot. Analyze it carefully and provide:
 
-Your analysis should include:
-1. Signal Strength: Rate the signal from 1-10
-2. Pattern Recognition: Identify any chart patterns or market conditions
-3. Risk Assessment: Evaluate potential risks
-4. Recommendation: Provide a clear buy/sell/hold recommendation with reasoning
+1. **Direction**: Determine if this is a BUY or SELL setup. Consider candlestick patterns, support/resistance, trend lines, indicators visible on chart. Be unbiased - don't default to buy.
+2. **Entry Price**: The recommended entry price based on the chart.
+3. **Take Profit (TP)**: A realistic take profit level.
+4. **Stop Loss (SL)**: A protective stop loss level.
+5. **Confidence**: Rate 1-100 how confident you are.
+6. **Reasoning**: Brief explanation of why.
 
-Keep responses concise but insightful. Use professional trading terminology but explain complex concepts simply.`;
+IMPORTANT: You MUST respond in this EXACT JSON format and nothing else:
+{
+  "direction": "buy" or "sell",
+  "entry": "price number",
+  "takeProfit": "price number", 
+  "stopLoss": "price number",
+  "confidence": number,
+  "symbol": "detected symbol or pair name",
+  "summary": "brief explanation"
+}
 
-    const userPrompt = `Analyze this trade signal:
-- Symbol: ${symbol || "BTC/USD"}
-- Current Price: ${price || "$45,000"}
-- 24h Volume: ${volume || "High"}
-- Trend Direction: ${trend || "Bullish"}
+Analyze both bullish AND bearish signals equally. Look at:
+- Trend direction (higher highs/lows vs lower highs/lows)
+- Support and resistance levels
+- Candlestick patterns (engulfing, pin bars, doji, etc.)
+- Any visible indicators (MA, RSI, MACD, etc.)
+- Volume if visible
+- Price action context
 
-Provide a comprehensive analysis of this market condition and potential trading opportunities.`;
+Be accurate and unbiased. If the chart shows a bearish setup, say SELL. If bullish, say BUY.`;
+
+    const messages: any[] = [
+      { role: "system", content: systemPrompt },
+    ];
+
+    if (chartImageBase64) {
+      // Use vision with the actual chart image
+      messages.push({
+        role: "user",
+        content: [
+          {
+            type: "image_url",
+            image_url: {
+              url: chartImageBase64,
+            },
+          },
+          {
+            type: "text",
+            text: `Analyze this trading chart screenshot. Detect the symbol/pair if visible. Provide your analysis in the exact JSON format specified. Be accurate about whether this is a buy or sell setup.${symbol ? ` The user says this is: ${symbol}` : ''}`,
+          },
+        ],
+      });
+    } else {
+      // Fallback text-only
+      messages.push({
+        role: "user",
+        content: `Analyze a ${symbol || "unknown"} chart and provide a sample analysis in the JSON format specified.`,
+      });
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -46,11 +84,8 @@ Provide a comprehensive analysis of this market condition and potential trading 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
+        model: "google/gemini-2.5-flash",
+        messages,
       }),
     });
 
@@ -73,12 +108,33 @@ Provide a comprehensive analysis of this market condition and potential trading 
     }
 
     const data = await response.json();
-    const analysis = data.choices?.[0]?.message?.content || "Unable to generate analysis";
+    const rawContent = data.choices?.[0]?.message?.content || "";
+    
+    console.log("Raw AI response:", rawContent);
 
-    console.log("Analysis generated successfully");
+    // Try to parse JSON from the response
+    let analysis;
+    try {
+      // Extract JSON from possible markdown code blocks
+      const jsonMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, rawContent];
+      analysis = JSON.parse(jsonMatch[1].trim());
+    } catch {
+      // Fallback: parse from text
+      const isBuy = /buy|bullish|long/i.test(rawContent);
+      const isSell = /sell|bearish|short/i.test(rawContent);
+      analysis = {
+        direction: isSell ? 'sell' : isBuy ? 'buy' : 'neutral',
+        entry: 'See analysis',
+        takeProfit: 'See analysis',
+        stopLoss: 'See analysis',
+        confidence: 50,
+        symbol: symbol || 'Unknown',
+        summary: rawContent,
+      };
+    }
 
     return new Response(
-      JSON.stringify({ analysis, symbol, timestamp: new Date().toISOString() }),
+      JSON.stringify({ analysis, timestamp: new Date().toISOString() }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
