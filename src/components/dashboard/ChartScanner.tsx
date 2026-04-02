@@ -107,19 +107,50 @@ export function ChartScanner() {
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={handleImageSelect}
           className="hidden"
         />
 
         {!imagePreview ? (
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center gap-3 hover:border-primary/50 hover:bg-primary/5 transition-all"
-          >
+          <div className="w-full border-2 border-dashed border-border rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all">
             <Upload className="h-8 w-8 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Tap to upload or take a screenshot</span>
-          </button>
+            <span className="text-sm text-muted-foreground">Upload a chart image or take a photo</span>
+            <div className="flex gap-3 w-full">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Gallery
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  // Create a separate input for camera capture
+                  const cameraInput = document.createElement('input');
+                  cameraInput.type = 'file';
+                  cameraInput.accept = 'image/*';
+                  cameraInput.capture = 'environment';
+                  cameraInput.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                      setImagePreview(ev.target?.result as string);
+                      setResult(null);
+                    };
+                    reader.readAsDataURL(file);
+                  };
+                  cameraInput.click();
+                }}
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                Camera
+              </Button>
+            </div>
+          </div>
         ) : (
           <div className="relative">
             <img

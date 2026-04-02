@@ -26,10 +26,12 @@ const DownloadSection = () => {
               </div>
               <h3 className="font-display text-xl font-semibold mb-2">Android</h3>
               <p className="text-muted-foreground mb-4">Connect to Android devices</p>
-              <Button variant="secondary" size="lg" className="w-full">
-                <Download className="w-5 h-5" />
-                Download APK
-              </Button>
+              <a href="https://play.google.com/store/apps/details?id=net.metaquotes.metatrader5" target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button variant="secondary" size="lg" className="w-full">
+                  <Download className="w-5 h-5" />
+                  Download APK
+                </Button>
+              </a>
             </div>
           </ScrollReveal>
 
@@ -40,10 +42,12 @@ const DownloadSection = () => {
               </div>
               <h3 className="font-display text-xl font-semibold mb-2">iOS</h3>
               <p className="text-muted-foreground mb-4">iPhone and iPad support</p>
-              <Button variant="secondary" size="lg" className="w-full">
-                <Download className="w-5 h-5" />
-                Download iOS
-              </Button>
+              <a href="https://apps.apple.com/app/metatrader-5/id413251709" target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button variant="secondary" size="lg" className="w-full">
+                  <Download className="w-5 h-5" />
+                  Download iOS
+                </Button>
+              </a>
             </div>
           </ScrollReveal>
         </div>
@@ -72,9 +76,11 @@ const DownloadSection = () => {
                   </div>
                   <h3 className="font-display text-lg font-semibold mb-2">Android</h3>
                   <p className="text-muted-foreground text-sm mb-4">Premium for Android devices</p>
-                  <Button variant="hero" size="lg" className="w-full">
-                    Download Premium
-                  </Button>
+                  <a href="https://play.google.com/store/apps/details?id=net.metaquotes.metatrader5" target="_blank" rel="noopener noreferrer" className="w-full">
+                    <Button variant="hero" size="lg" className="w-full">
+                      Download Premium
+                    </Button>
+                  </a>
                 </div>
 
                 <div className="bg-card rounded-xl p-6 text-center border border-border">
@@ -83,9 +89,11 @@ const DownloadSection = () => {
                   </div>
                   <h3 className="font-display text-lg font-semibold mb-2">iOS</h3>
                   <p className="text-muted-foreground text-sm mb-4">Premium for iPhone and iPad</p>
-                  <Button variant="hero" size="lg" className="w-full">
-                    Download Premium
-                  </Button>
+                  <a href="https://apps.apple.com/app/metatrader-5/id413251709" target="_blank" rel="noopener noreferrer" className="w-full">
+                    <Button variant="hero" size="lg" className="w-full">
+                      Download Premium
+                    </Button>
+                  </a>
                 </div>
               </div>
             </div>
