@@ -12,6 +12,20 @@ interface BotControlPanelProps {
 
 export function BotControlPanel({ botName = "CODE BASE ALGO PRO", onPairsClick, onLogsClick }: BotControlPanelProps) {
   const [isRunning, setIsRunning] = useState(false);
+  const [keyStats, setKeyStats] = useState({ total: 0, used: 0 });
+
+  useEffect(() => {
+    const fetchKeyStats = async () => {
+      const { data } = await supabase.from('license_keys').select('user_id');
+      if (data) {
+        setKeyStats({
+          total: data.length,
+          used: data.filter(k => k.user_id !== null).length,
+        });
+      }
+    };
+    fetchKeyStats();
+  }, []);
 
   const handleToggle = () => {
     setIsRunning(!isRunning);
