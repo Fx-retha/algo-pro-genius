@@ -139,6 +139,32 @@ export function BotControlPanel({ botName = "CODE BASE ALGO PRO", onPairsClick, 
           {isRunning ? 'Bot Running' : 'Bot Stopped'}
         </span>
       </div>
+
+      {/* License Key Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.4 }}
+        className="w-full max-w-sm"
+      >
+        <div className="flex gap-3">
+          <div className="flex-1 p-3 rounded-xl border border-border bg-card/60 text-center">
+            <Key className="h-4 w-4 text-primary mx-auto mb-1" />
+            <p className="text-xl font-bold text-foreground">{keyStats.total}</p>
+            <p className="text-[10px] text-muted-foreground">Keys Generated</p>
+          </div>
+          <div className="flex-1 p-3 rounded-xl border border-border bg-card/60 text-center">
+            <Key className="h-4 w-4 text-green-500 mx-auto mb-1" />
+            <p className="text-xl font-bold text-foreground">{keyStats.used}</p>
+            <p className="text-[10px] text-muted-foreground">Keys Used</p>
+          </div>
+          <div className="flex-1 p-3 rounded-xl border border-border bg-card/60 text-center">
+            <Key className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+            <p className="text-xl font-bold text-foreground">{keyStats.total - keyStats.used}</p>
+            <p className="text-[10px] text-muted-foreground">Available</p>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }
