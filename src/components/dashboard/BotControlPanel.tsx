@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { TrendingUp, Play, Square, Clock, BarChart3 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, Play, Square, Clock, Key } from 'lucide-react';
 import { motion } from 'framer-motion';
 import heroRobot from '@/assets/hero-robot.jpeg';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BotControlPanelProps {
   botName?: string;
