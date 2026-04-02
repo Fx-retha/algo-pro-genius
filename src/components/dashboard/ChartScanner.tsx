@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, Upload, Loader2, TrendingUp, TrendingDown, Target, ShieldCheck, X } from 'lucide-react';
+import { Camera, Upload, Loader2, TrendingUp, TrendingDown, Target, ShieldCheck, X, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,12 +12,14 @@ interface AnalysisResult {
   takeProfit: string;
   stopLoss: string;
   confidence: number;
+  symbol: string;
   summary: string;
 }
 
 export function ChartScanner() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isExecuting, setIsExecuting] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,30 +55,23 @@ export function ChartScanner() {
     try {
       const { data, error } = await supabase.functions.invoke('analyze-trade', {
         body: {
-          symbol: 'Chart Analysis',
-          price: 'From screenshot',
-          volume: 'Visual analysis',
-          trend: 'AI detecting from chart image',
-          chartImage: true,
+          chartImageBase64: imagePreview,
         },
       });
 
       if (error) throw error;
 
-      // Parse the AI response into structured result
-      const analysis = data.analysis || '';
-      
-      // Extract a structured result from the text
-      const isBuy = /buy|bullish|long/i.test(analysis);
-      const isSell = /sell|bearish|short/i.test(analysis);
-      
+      const analysis = data.analysis;
+      if (!analysis) throw new Error('No analysis returned');
+
       setResult({
-        direction: isBuy ? 'buy' : isSell ? 'sell' : 'neutral',
-        entry: extractValue(analysis, /entry[:\s]*[\$]?([\d,.]+)/i) || 'See analysis',
-        takeProfit: extractValue(analysis, /take\s*profit[:\s]*[\$]?([\d,.]+)/i) || extractValue(analysis, /tp[:\s]*[\$]?([\d,.]+)/i) || 'See analysis',
-        stopLoss: extractValue(analysis, /stop\s*loss[:\s]*[\$]?([\d,.]+)/i) || extractValue(analysis, /sl[:\s]*[\$]?([\d,.]+)/i) || 'See analysis',
-        confidence: isBuy || isSell ? 75 : 50,
-        summary: analysis,
+        direction: analysis.direction === 'sell' ? 'sell' : analysis.direction === 'buy' ? 'buy' : 'neutral',
+        entry: String(analysis.entry || 'N/A'),
+        takeProfit: String(analysis.takeProfit || 'N/A'),
+        stopLoss: String(analysis.stopLoss || 'N/A'),
+        confidence: Number(analysis.confidence) || 50,
+        symbol: String(analysis.symbol || 'Unknown'),
+        summary: String(analysis.summary || ''),
       });
 
       toast.success('Chart analyzed successfully!');
@@ -85,6 +80,39 @@ export function ChartScanner() {
       toast.error('Failed to analyze chart. Try again.');
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const executeTrade = async (direction: 'buy' | 'sell') => {
+    if (!result) return;
+
+    const accountId = localStorage.getItem('mt_account_id');
+    if (!accountId) {
+      toast.error('Please connect your MetaTrader account in the MetaTrader tab first.');
+      return;
+    }
+
+    setIsExecuting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('metaapi-trade', {
+        body: {
+          action: 'place_trade',
+          accountId,
+          symbol: result.symbol,
+          volume: '0.01',
+          actionType: direction === 'buy' ? 'ORDER_TYPE_BUY' : 'ORDER_TYPE_SELL',
+          stopLoss: result.stopLoss !== 'N/A' && result.stopLoss !== 'See analysis' ? result.stopLoss : undefined,
+          takeProfit: result.takeProfit !== 'N/A' && result.takeProfit !== 'See analysis' ? result.takeProfit : undefined,
+        },
+      });
+
+      if (error) throw error;
+      toast.success(`${direction.toUpperCase()} order placed for ${result.symbol}!`);
+    } catch (err) {
+      console.error('Trade execution error:', err);
+      toast.error(`Failed to execute ${direction} trade. Check your MetaTrader connection.`);
+    } finally {
+      setIsExecuting(false);
     }
   };
 
@@ -97,7 +125,7 @@ export function ChartScanner() {
           </div>
           <div>
             <CardTitle className="font-display text-lg">Chart Scanner</CardTitle>
-            <p className="text-xs text-muted-foreground">Upload a chart screenshot for AI analysis</p>
+            <p className="text-xs text-muted-foreground">Upload or capture a chart for AI analysis</p>
           </div>
         </div>
       </CardHeader>
@@ -128,7 +156,6 @@ export function ChartScanner() {
                 variant="outline"
                 className="flex-1"
                 onClick={() => {
-                  // Create a separate input for camera capture
                   const cameraInput = document.createElement('input');
                   cameraInput.type = 'file';
                   cameraInput.accept = 'image/*';
@@ -211,11 +238,13 @@ export function ChartScanner() {
                 ) : (
                   <ShieldCheck className="h-6 w-6 text-muted-foreground" />
                 )}
-                <div>
+                <div className="flex-1">
                   <p className="font-bold text-sm uppercase">
                     {result.direction === 'buy' ? '🟢 BUY Signal' : result.direction === 'sell' ? '🔴 SELL Signal' : '⚪ Neutral'}
                   </p>
-                  <p className="text-xs text-muted-foreground">Confidence: {result.confidence}%</p>
+                  <p className="text-xs text-muted-foreground">
+                    {result.symbol} • Confidence: {result.confidence}%
+                  </p>
                 </div>
               </div>
 
@@ -235,6 +264,42 @@ export function ChartScanner() {
                 </div>
               </div>
 
+              {/* Execute Trade Buttons */}
+              {result.direction !== 'neutral' && (
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => executeTrade('buy')}
+                    disabled={isExecuting}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    size="lg"
+                  >
+                    {isExecuting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Zap className="h-4 w-4 mr-2" />
+                        Execute BUY
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => executeTrade('sell')}
+                    disabled={isExecuting}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                    size="lg"
+                  >
+                    {isExecuting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Zap className="h-4 w-4 mr-2" />
+                        Execute SELL
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
               {/* Summary */}
               <div className="p-3 rounded-xl bg-muted/20 border border-border">
                 <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
@@ -247,9 +312,4 @@ export function ChartScanner() {
       </CardContent>
     </Card>
   );
-}
-
-function extractValue(text: string, regex: RegExp): string | null {
-  const match = text.match(regex);
-  return match?.[1] || null;
 }
