@@ -50,7 +50,7 @@ const interfaces = [
 
 export function BotSettings() {
   const { theme, setTheme } = useTheme();
-  const [activeInterface, setActiveInterface] = useState('default');
+  const { style: activeInterface, setStyle: setActiveInterface } = useInterfaceStyle();
   const [notifications, setNotifications] = useState(true);
   const [soundAlerts, setSoundAlerts] = useState(true);
 
