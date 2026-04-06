@@ -109,7 +109,7 @@ const PricingSection = () => {
                   variant={plan.popular ? "hero" : "outline"}
                   size="lg"
                   className="w-full"
-                  onClick={() => navigate('/license')}
+                  onClick={() => navigate('/license-auth')}
                 >
                   {plan.cta}
                 </Button>
