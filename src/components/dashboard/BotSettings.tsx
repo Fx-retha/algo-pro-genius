@@ -76,7 +76,7 @@ export function BotSettings() {
               <button
                 key={iface.id}
                 onClick={() => {
-                  setActiveInterface(iface.id);
+                  setActiveInterface(iface.id as 'default' | 'circle' | 'square' | 'pill');
                   toast.success(`Interface: ${iface.label}`);
                 }}
                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
