@@ -7,6 +7,7 @@ import { Bell, Palette, LayoutGrid, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
 import { ChartScanner } from './ChartScanner';
+import { useInterfaceStyle } from '@/hooks/useInterfaceStyle';
 
 const themes = [
   { id: 'dark', label: 'Default Dark', description: 'Clean dark interface', color: 'hsl(320 100% 60%)' },
@@ -49,7 +50,7 @@ const interfaces = [
 
 export function BotSettings() {
   const { theme, setTheme } = useTheme();
-  const [activeInterface, setActiveInterface] = useState('default');
+  const { style: activeInterface, setStyle: setActiveInterface } = useInterfaceStyle();
   const [notifications, setNotifications] = useState(true);
   const [soundAlerts, setSoundAlerts] = useState(true);
 
@@ -75,7 +76,7 @@ export function BotSettings() {
               <button
                 key={iface.id}
                 onClick={() => {
-                  setActiveInterface(iface.id);
+                  setActiveInterface(iface.id as 'default' | 'circle' | 'square' | 'pill');
                   toast.success(`Interface: ${iface.label}`);
                 }}
                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
