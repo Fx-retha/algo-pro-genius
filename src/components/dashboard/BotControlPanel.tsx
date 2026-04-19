@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Play, Square, Clock, Key } from 'lucide-react';
-import { motion } from 'framer-motion';
-import heroRobot from '@/assets/hero-robot.jpeg';
+import { motion, AnimatePresence } from 'framer-motion';
+import defaultRobot from '@/assets/hero-robot.jpeg';
 import { supabase } from '@/integrations/supabase/client';
 
 interface BotControlPanelProps {
   botName?: string;
+  botAvatar?: string;
   onPairsClick: () => void;
   onLogsClick: () => void;
 }
 
-export function BotControlPanel({ botName = "CODE BASE ALGO PRO", onPairsClick, onLogsClick }: BotControlPanelProps) {
+export function BotControlPanel({ botName = "CODE BASE ALGO PRO", botAvatar, onPairsClick, onLogsClick }: BotControlPanelProps) {
+  const avatarSrc = botAvatar || defaultRobot;
   const [isRunning, setIsRunning] = useState(false);
   const [keyStats, setKeyStats] = useState({ total: 0, used: 0 });
 
