@@ -44,8 +44,14 @@ export function BotControlPanel({ botName = "CODE BASE ALGO PRO", botAvatar, onP
       >
         <div className={`w-40 h-40 rounded-full p-1 ${isRunning ? 'bg-gradient-to-r from-green-500 via-emerald-400 to-green-500' : 'bg-gradient-to-r from-primary via-purple-400 to-primary'} animate-pulse`}>
           <div className="w-full h-full rounded-full overflow-hidden border-4 border-background">
-            <img 
-              src={heroRobot} 
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={avatarSrc}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.25 }}
+                src={avatarSrc} 
               alt="Trading Bot" 
               className="w-full h-full object-cover"
             />
