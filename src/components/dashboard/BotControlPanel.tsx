@@ -51,10 +51,11 @@ export function BotControlPanel({ botName = "CODE BASE ALGO PRO", botAvatar, onP
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.25 }}
-                src={avatarSrc} 
-              alt="Trading Bot" 
-              className="w-full h-full object-cover"
-            />
+                src={avatarSrc}
+                alt="Trading Bot"
+                className="w-full h-full object-cover"
+              />
+            </AnimatePresence>
           </div>
         </div>
         {/* Glow Effect */}
