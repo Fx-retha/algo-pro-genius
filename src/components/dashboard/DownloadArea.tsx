@@ -1,22 +1,44 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Monitor, Apple, Terminal } from 'lucide-react';
+import { Download, Monitor, Apple, Smartphone } from 'lucide-react';
 import { License } from '@/hooks/useLicense';
+import { toast } from 'sonner';
 
 interface DownloadAreaProps {
   license: License | null;
 }
 
 const downloads = [
-  { name: 'Windows', icon: Monitor, version: 'v2.4.1', size: '45 MB' },
-  { name: 'macOS', icon: Apple, version: 'v2.4.1', size: '52 MB' },
-  { name: 'Linux', icon: Terminal, version: 'v2.4.1', size: '41 MB' },
+  {
+    name: 'Windows',
+    icon: Monitor,
+    version: 'MT5 Desktop',
+    size: 'Installer',
+    url: 'https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe',
+  },
+  {
+    name: 'macOS',
+    icon: Apple,
+    version: 'MT5 for Mac',
+    size: 'App Store',
+    url: 'https://apps.apple.com/app/metatrader-5/id413251709',
+  },
+  {
+    name: 'Android',
+    icon: Smartphone,
+    version: 'MT5 Mobile',
+    size: 'Play Store',
+    url: 'https://play.google.com/store/apps/details?id=net.metaquotes.metatrader5',
+  },
 ];
 
 export function DownloadArea({ license }: DownloadAreaProps) {
-  const handleDownload = (platform: string) => {
-    // In production, this would trigger actual downloads
-    console.log(`Downloading for ${platform}`);
+  const handleDownload = (item: typeof downloads[number]) => {
+    toast.success(`Opening ${item.name} installer…`, {
+      description: `Your license ${license?.key ?? ''} will be applied after install.`,
+    });
+    // Trigger a real download / store redirect in a new tab
+    window.open(item.url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -44,18 +66,19 @@ export function DownloadArea({ license }: DownloadAreaProps) {
                 </div>
                 <Button
                   size="sm"
-                  onClick={() => handleDownload(item.name)}
+                  onClick={() => handleDownload(item)}
                   className="w-full"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download
+                  Install
                 </Button>
               </div>
             </div>
           ))}
         </div>
         <p className="text-xs text-muted-foreground mt-4 text-center">
-          Your license: <span className="font-mono">{license?.key}</span> will be automatically applied.
+          Install MetaTrader 5 first, then your license{' '}
+          <span className="font-mono">{license?.key}</span> connects the bot automatically.
         </p>
       </CardContent>
     </Card>
