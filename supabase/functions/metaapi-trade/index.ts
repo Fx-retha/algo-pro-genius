@@ -105,6 +105,22 @@ serve(async (req) => {
         });
       }
 
+      case "get_symbol_price": {
+        if (!symbol) {
+          return new Response(JSON.stringify({ error: "symbol required" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const res = await fetch(`${baseUrl}/users/current/accounts/${accountId}/symbols/${encodeURIComponent(symbol)}/current-price`, {
+          headers: { "auth-token": METAAPI_TOKEN },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to get symbol price");
+        return new Response(JSON.stringify(data), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       case "list_accounts": {
         const res = await fetch("https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts", {
           headers: { "auth-token": METAAPI_TOKEN },
