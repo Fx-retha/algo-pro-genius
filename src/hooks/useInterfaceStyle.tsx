@@ -1,6 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type InterfaceStyle = 'default' | 'circle' | 'square' | 'pill';
+export type InterfaceStyle =
+  | 'default'
+  | 'circle'
+  | 'square'
+  | 'pill'
+  | 'soft'
+  | 'bubble'
+  | 'sleek'
+  | 'cut';
 
 interface InterfaceStyleContextType {
   style: InterfaceStyle;
@@ -13,6 +21,21 @@ const styleToRadius: Record<InterfaceStyle, string> = {
   circle: 'rounded-full',
   square: 'rounded-none',
   pill: 'rounded-3xl',
+  soft: 'rounded-md',
+  bubble: 'rounded-[2rem]',
+  sleek: 'rounded-lg',
+  cut: 'rounded-tl-xl rounded-br-xl',
+};
+
+const radiusMap: Record<InterfaceStyle, string> = {
+  default: '0.75rem',
+  circle: '9999px',
+  square: '0px',
+  pill: '1.5rem',
+  soft: '0.375rem',
+  bubble: '2rem',
+  sleek: '0.5rem',
+  cut: '0.75rem',
 };
 
 const InterfaceStyleContext = createContext<InterfaceStyleContextType>({
@@ -31,16 +54,8 @@ export function InterfaceStyleProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('interface-style', s);
   };
 
-  // Apply CSS variable for radius globally
   useEffect(() => {
-    const root = document.documentElement;
-    const radiusMap: Record<InterfaceStyle, string> = {
-      default: '0.75rem',
-      circle: '9999px',
-      square: '0px',
-      pill: '1.5rem',
-    };
-    root.style.setProperty('--radius', radiusMap[style]);
+    document.documentElement.style.setProperty('--radius', radiusMap[style]);
   }, [style]);
 
   return (
