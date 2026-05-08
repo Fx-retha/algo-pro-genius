@@ -18,35 +18,15 @@ const themes = [
 ];
 
 const interfaces = [
-  {
-    id: 'default',
-    label: 'Standard',
-    description: 'Balanced corners',
-    shapeClass: 'rounded-xl',
-    previewClass: 'w-14 h-14 rounded-xl',
-  },
-  {
-    id: 'circle',
-    label: 'Circle',
-    description: 'Fully rounded',
-    shapeClass: 'rounded-full',
-    previewClass: 'w-14 h-14 rounded-full',
-  },
-  {
-    id: 'square',
-    label: 'Square',
-    description: 'Sharp edges',
-    shapeClass: 'rounded-none',
-    previewClass: 'w-14 h-14 rounded-none',
-  },
-  {
-    id: 'pill',
-    label: 'Pill',
-    description: 'Super smooth',
-    shapeClass: 'rounded-3xl',
-    previewClass: 'w-20 h-10 rounded-3xl',
-  },
-];
+  { id: 'default', label: 'Standard', description: 'Balanced corners', previewClass: 'w-14 h-14 rounded-xl' },
+  { id: 'circle', label: 'Circle', description: 'Fully rounded', previewClass: 'w-14 h-14 rounded-full' },
+  { id: 'square', label: 'Square', description: 'Sharp edges', previewClass: 'w-14 h-14 rounded-none' },
+  { id: 'pill', label: 'Pill', description: 'Super smooth', previewClass: 'w-20 h-10 rounded-3xl' },
+  { id: 'soft', label: 'Soft', description: 'Gentle radius', previewClass: 'w-14 h-14 rounded-md' },
+  { id: 'bubble', label: 'Bubble', description: 'Big & playful', previewClass: 'w-14 h-14 rounded-[2rem]' },
+  { id: 'sleek', label: 'Sleek', description: 'Modern minimal', previewClass: 'w-14 h-14 rounded-lg' },
+  { id: 'cut', label: 'Cut', description: 'Diagonal accent', previewClass: 'w-14 h-14 rounded-tl-xl rounded-br-xl' },
+] as const;
 
 export function BotSettings() {
   const { theme, setTheme } = useTheme();
