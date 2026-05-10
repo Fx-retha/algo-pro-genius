@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      bot_configs: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          last_run_at: string | null
+          max_open_trades: number
+          min_confidence: number
+          mt_account_id: string | null
+          symbols: string[]
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          max_open_trades?: number
+          min_confidence?: number
+          mt_account_id?: string | null
+          symbols?: string[]
+          updated_at?: string
+          user_id: string
+          volume?: number
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          max_open_trades?: number
+          min_confidence?: number
+          mt_account_id?: string | null
+          symbols?: string[]
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_configs_mt_account_id_fkey"
+            columns: ["mt_account_id"]
+            isOneToOne: false
+            referencedRelation: "mt_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       license_keys: {
         Row: {
           activated_at: string | null
@@ -92,6 +142,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mt_accounts: {
+        Row: {
+          broker: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          meta_account_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          broker?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          meta_account_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          broker?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          meta_account_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -133,6 +216,132 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      signals: {
+        Row: {
+          auto_executed: boolean
+          confidence: number
+          created_at: string
+          direction: string
+          entry: string | null
+          id: string
+          source: string
+          stop_loss: string | null
+          summary: string | null
+          symbol: string
+          take_profit: string | null
+          user_id: string
+        }
+        Insert: {
+          auto_executed?: boolean
+          confidence?: number
+          created_at?: string
+          direction: string
+          entry?: string | null
+          id?: string
+          source?: string
+          stop_loss?: string | null
+          summary?: string | null
+          symbol: string
+          take_profit?: string | null
+          user_id: string
+        }
+        Update: {
+          auto_executed?: boolean
+          confidence?: number
+          created_at?: string
+          direction?: string
+          entry?: string | null
+          id?: string
+          source?: string
+          stop_loss?: string | null
+          summary?: string | null
+          symbol?: string
+          take_profit?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          entry_price: number | null
+          error_message: string | null
+          id: string
+          meta_order_id: string | null
+          meta_position_id: string | null
+          mt_account_id: string | null
+          opened_at: string | null
+          profit: number | null
+          side: string
+          signal_id: string | null
+          status: string
+          stop_loss: number | null
+          symbol: string
+          take_profit: number | null
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          entry_price?: number | null
+          error_message?: string | null
+          id?: string
+          meta_order_id?: string | null
+          meta_position_id?: string | null
+          mt_account_id?: string | null
+          opened_at?: string | null
+          profit?: number | null
+          side: string
+          signal_id?: string | null
+          status?: string
+          stop_loss?: number | null
+          symbol: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          entry_price?: number | null
+          error_message?: string | null
+          id?: string
+          meta_order_id?: string | null
+          meta_position_id?: string | null
+          mt_account_id?: string | null
+          opened_at?: string | null
+          profit?: number | null
+          side?: string
+          signal_id?: string | null
+          status?: string
+          stop_loss?: number | null
+          symbol?: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_mt_account_id_fkey"
+            columns: ["mt_account_id"]
+            isOneToOne: false
+            referencedRelation: "mt_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "signals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
