@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database, Link2, CheckCircle2, XCircle, Eye, EyeOff, Lock, Check, ChevronsUpDown } from 'lucide-react';
+import { Database, Link2, CheckCircle2, XCircle, Eye, EyeOff, Lock, Check, ChevronsUpDown, Terminal, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -270,6 +270,49 @@ export function MetatraderSettings() {
           </CardContent>
         </Card>
       )}
+
+      {/* Code Base EA API endpoint — wire this URL into your MT4/MT5 EA */}
+      <Card className="border-border bg-card/50 backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+              <Terminal className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="font-display">Code Base EA API</CardTitle>
+              <CardDescription>Paste this URL into your MT4/MT5 EA settings</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {[
+            { label: 'Base URL', value: 'https://vdjckpwwqqcqavrucndh.supabase.co/functions/v1/code-base-api' },
+            { label: 'Validate license', value: 'https://vdjckpwwqqcqavrucndh.supabase.co/functions/v1/code-base-api?endpoint=validate_license' },
+            { label: 'Get signals', value: 'https://vdjckpwwqqcqavrucndh.supabase.co/functions/v1/code-base-api?endpoint=get_signals' },
+            { label: 'Log trade', value: 'https://vdjckpwwqqcqavrucndh.supabase.co/functions/v1/code-base-api?endpoint=trading_activity' },
+          ].map((row) => (
+            <div key={row.label} className="space-y-1">
+              <Label className="text-xs text-muted-foreground">{row.label}</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={row.value} className="font-mono text-xs" />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(row.value);
+                    toast.success('Copied');
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          <p className="text-xs text-muted-foreground">
+            Endpoints: <span className="font-mono">validate_license, register_instance, instance_status, trading_activity, get_signals, get_symbols, get_product_images, check_app_version, activate_email_device</span>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
