@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.trading-bot-worker]
 verify_jwt = false
+
+[functions.code-base-api]
+verify_jwt = false
