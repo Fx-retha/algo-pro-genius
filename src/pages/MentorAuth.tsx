@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,10 +37,18 @@ const MentorAuth = () => {
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const nextParam = searchParams.get("next");
+  const safeNext =
+    nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
+      if (safeNext) {
+        window.location.href = safeNext;
+        return;
+      }
       // Check if admin
       const checkAdmin = async () => {
         const { data } = await supabase
@@ -57,7 +65,7 @@ const MentorAuth = () => {
       };
       checkAdmin();
     }
-  }, [user, navigate]);
+  }, [user, navigate, safeNext]);
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -67,7 +75,7 @@ const MentorAuth = () => {
       emailSchema.parse(email);
     } catch (e) {
       if (e instanceof z.ZodError) {
-        newErrors.email = e.errors[0]?.message;
+        newErrors.email = e.issues[0]?.message;
       }
     }
 
@@ -77,7 +85,7 @@ const MentorAuth = () => {
         phoneSchema.parse(phoneNumber);
       } catch (e) {
         if (e instanceof z.ZodError) {
-          newErrors.phone = e.errors[0]?.message;
+          newErrors.phone = e.issues[0]?.message;
         }
       }
 
