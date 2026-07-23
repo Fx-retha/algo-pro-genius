@@ -67,7 +67,7 @@ const MentorAuth = () => {
       emailSchema.parse(email);
     } catch (e) {
       if (e instanceof z.ZodError) {
-        newErrors.email = e.errors[0]?.message;
+        newErrors.email = e.issues[0]?.message;
       }
     }
 
@@ -77,7 +77,7 @@ const MentorAuth = () => {
         phoneSchema.parse(phoneNumber);
       } catch (e) {
         if (e instanceof z.ZodError) {
-          newErrors.phone = e.errors[0]?.message;
+          newErrors.phone = e.issues[0]?.message;
         }
       }
 
