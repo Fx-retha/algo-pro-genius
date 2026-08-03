@@ -76,10 +76,9 @@ serve(async (req) => {
         const created = await createRes.json();
         if (!createRes.ok) {
           console.error("provision failed", created);
-          return new Response(JSON.stringify({ error: created.message || "Failed to create MetaAPI account", details: created }), {
-            status: createRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return json({ error: created.message || "Failed to create MetaAPI account", details: created });
         }
+
 
         // Deploy so it can trade (ignore errors — may already be deploying)
         await fetch(`${provisioningUrl}/users/current/accounts/${created.id}/deploy`, {
