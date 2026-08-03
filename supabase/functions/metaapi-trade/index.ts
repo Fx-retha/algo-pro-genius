@@ -8,11 +8,22 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Always answer 200 with an { error } payload so the client can show the real reason
+  const json = (payload: unknown, status = 200) =>
+    new Response(JSON.stringify(payload), {
+      status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
   try {
     const METAAPI_TOKEN = Deno.env.get("METAAPI_TOKEN");
     if (!METAAPI_TOKEN) {
-      return new Response(JSON.stringify({ error: "MetaAPI token not configured" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return json({ error: "MetaAPI token not configured. Add your MetaAPI API token in settings." });
+    }
+    // Real MetaAPI tokens are JWTs (three dot-separated parts, very long)
+    if (METAAPI_TOKEN.split(".").length !== 3) {
+      return json({
+        error:
+          "The saved MetaAPI token is not a valid API token. Copy the long JWT token from MetaAPI → API access tokens (it starts with 'eyJ' and has two dots), not the account ID.",
       });
     }
 
@@ -21,6 +32,19 @@ serve(async (req) => {
 
     const baseUrl = "https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai";
     const provisioningUrl = "https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai";
+
+    if (action === "verify_token") {
+      const res = await fetch(`${provisioningUrl}/users/current/accounts`, {
+        headers: { "auth-token": METAAPI_TOKEN },
+      });
+      const data = await res.json().catch(() => ({}));
+      return json(res.ok ? { ok: true, accounts: Array.isArray(data) ? data.length : 0 } : { error: data.message || "Token rejected by MetaAPI" });
+    }
+
+    if (action !== "provision_account" && action !== "list_accounts" && !accountId) {
+      return json({ error: "accountId is required for this action" });
+    }
+
 
     // Route based on action
     switch (action) {
