@@ -16,12 +16,70 @@ serve(async (req) => {
       });
     }
 
-    const { action, accountId, symbol, volume, stopLoss, takeProfit, actionType } = await req.json();
+    const body = await req.json();
+    const { action, accountId, symbol, volume, stopLoss, takeProfit, actionType } = body;
 
     const baseUrl = "https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai";
+    const provisioningUrl = "https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai";
 
     // Route based on action
     switch (action) {
+      // Create (provision) a MetaAPI account from broker login/password/server.
+      // Works with any MT4/MT5 broker, incl. Razor Markets and other SA brokers.
+      case "provision_account": {
+        const { login, password, server, platform, name, region } = body;
+        if (!login || !password || !server) {
+          return new Response(JSON.stringify({ error: "login, password and server are required" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const createRes = await fetch(`${provisioningUrl}/users/current/accounts`, {
+          method: "POST",
+          headers: { "auth-token": METAAPI_TOKEN, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name || `Code Base ${login}`,
+            type: "cloud-g2",
+            login: String(login),
+            password: String(password),
+            server: String(server),
+            platform: platform === "mt4" ? "mt4" : "mt5",
+            magic: 202608,
+            region: region || "london",
+            reliability: "regular",
+individual: undefined,
+          }),
+        });
+        const created = await createRes.json();
+        if (!createRes.ok) {
+          console.error("provision failed", created);
+          return new Response(JSON.stringify({ error: created.message || "Failed to create MetaAPI account", details: created }), {
+            status: createRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Deploy so it can trade (ignore errors — may already be deploying)
+        await fetch(`${provisioningUrl}/users/current/accounts/${created.id}/deploy`, {
+          method: "POST",
+          headers: { "auth-token": METAAPI_TOKEN },
+        }).catch(() => null);
+
+        return new Response(JSON.stringify({ accountId: created.id, state: "DEPLOYING" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "remove_account": {
+        await fetch(`${provisioningUrl}/users/current/accounts/${accountId}/undeploy`, {
+          method: "POST", headers: { "auth-token": METAAPI_TOKEN },
+        }).catch(() => null);
+        const res = await fetch(`${provisioningUrl}/users/current/accounts/${accountId}`, {
+          method: "DELETE", headers: { "auth-token": METAAPI_TOKEN },
+        });
+        return new Response(JSON.stringify({ ok: res.ok }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       case "get_account_info": {
         const res = await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}`, {
           headers: { "auth-token": METAAPI_TOKEN },
