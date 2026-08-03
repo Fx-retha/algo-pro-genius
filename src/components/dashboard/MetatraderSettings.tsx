@@ -338,10 +338,27 @@ export function MetatraderSettings() {
             <Label htmlFor="server">Server</Label>
             <Input
               id="server"
-              placeholder={platform === 'mt5' ? 'e.g., Exness-MT5Real' : 'e.g., Exness-Real'}
+              placeholder={platform === 'mt5' ? 'e.g., RazorMarkets-Live' : 'e.g., RazorMarkets-Server'}
               value={server}
               onChange={(e) => setServer(e.target.value)}
             />
+            {selectedBroker?.servers?.length ? (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {selectedBroker.servers.map((s) => (
+                  <Badge
+                    key={s}
+                    variant={server === s ? 'default' : 'secondary'}
+                    className="cursor-pointer"
+                    onClick={() => setServer(s)}
+                  >
+                    {s}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+            <p className="text-xs text-muted-foreground">
+              Exact server name from your MT{platform === 'mt5' ? '5' : '4'} terminal (Tools → Options → Server).
+            </p>
           </div>
 
           {connected ? (
@@ -350,9 +367,9 @@ export function MetatraderSettings() {
               Disconnect Account
             </Button>
           ) : (
-            <Button className="w-full" onClick={handleConnect}>
-              <Link2 className="h-4 w-4 mr-2" />
-              Connect Account
+            <Button className="w-full" onClick={handleConnect} disabled={connecting}>
+              {connecting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Link2 className="h-4 w-4 mr-2" />}
+              {connecting ? 'Linking account…' : 'Connect Account'}
             </Button>
           )}
         </CardContent>
@@ -361,31 +378,46 @@ export function MetatraderSettings() {
       {connected && (
         <Card className="border-border bg-card/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg">Account Info</CardTitle>
-            <CardDescription>Connected via {platform === 'mt5' ? 'MetaTrader 5' : 'MetaTrader 4'}</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">Account Info</CardTitle>
+                <CardDescription>{savedAccount?.label ?? 'Live account'}</CardDescription>
+              </div>
+              {savedAccount && (
+                <Button variant="outline" size="sm" onClick={() => loadAccountInfo(savedAccount.meta_account_id)}>
+                  Refresh
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground">Balance</p>
-                <p className="text-lg font-semibold text-foreground">$10,245.50</p>
+            {accountInfo ? (
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Balance', value: accountInfo.balance },
+                  { label: 'Equity', value: accountInfo.equity },
+                  { label: 'Margin Used', value: accountInfo.margin },
+                  { label: 'Free Margin', value: accountInfo.freeMargin },
+                ].map((m) => (
+                  <div key={m.label} className="p-3 rounded-lg bg-muted/50">
+                    <p className="text-xs text-muted-foreground">{m.label}</p>
+                    <p className="text-lg font-semibold text-foreground">
+                      {typeof m.value === 'number'
+                        ? `${accountInfo.currency ?? '$'} ${m.value.toFixed(2)}`
+                        : '—'}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <div className="p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground">Equity</p>
-                <p className="text-lg font-semibold text-foreground">$10,312.80</p>
-              </div>
-              <div className="p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground">Margin Used</p>
-                <p className="text-lg font-semibold text-foreground">$1,024.00</p>
-              </div>
-              <div className="p-3 rounded-lg bg-muted/50">
-                <p className="text-xs text-muted-foreground">Free Margin</p>
-                <p className="text-lg font-semibold text-foreground">$9,288.80</p>
-              </div>
-            </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Account is deploying on the broker server. Tap Refresh in a moment to load live balances.
+              </p>
+            )}
           </CardContent>
         </Card>
       )}
+
 
       {/* Code Base EA API endpoint — wire this URL into your MT4/MT5 EA */}
       <Card className="border-border bg-card/50 backdrop-blur-sm">
