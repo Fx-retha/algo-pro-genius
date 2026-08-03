@@ -267,26 +267,30 @@ export function MetatraderSettings() {
                   <CommandInput placeholder="Search broker..." />
                   <CommandList>
                     <CommandEmpty>No broker found.</CommandEmpty>
-                    <CommandGroup>
-                      {BROKERS.map((b) => (
-                        <CommandItem
-                          key={b.value}
-                          value={b.label}
-                          onSelect={() => {
-                            setBroker(b.value);
-                            setBrokerOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              broker === b.value ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {b.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
+                    {BROKER_GROUPS.map((group) => (
+                      <CommandGroup key={group} heading={group}>
+                        {BROKERS.filter((b) => b.group === group).map((b) => (
+                          <CommandItem
+                            key={b.value}
+                            value={`${b.label} ${b.group}`}
+                            onSelect={() => {
+                              setBroker(b.value);
+                              if (b.servers?.length) setServer(b.servers[0]);
+                              setBrokerOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                broker === b.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {b.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    ))}
+
                   </CommandList>
                 </Command>
               </PopoverContent>
