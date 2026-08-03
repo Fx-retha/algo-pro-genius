@@ -47,7 +47,6 @@ serve(async (req) => {
             magic: 202608,
             region: region || "london",
             reliability: "regular",
-individual: undefined,
           }),
         });
         const created = await createRes.json();
@@ -144,7 +143,7 @@ individual: undefined,
       }
 
       case "close_position": {
-        const { positionId } = await req.json();
+        const positionId = body.positionId;
         const res = await fetch(`${baseUrl}/users/current/accounts/${accountId}/trade`, {
           method: "POST",
           headers: {
