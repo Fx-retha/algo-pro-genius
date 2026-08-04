@@ -76,7 +76,7 @@ serve(async (req) => {
         const created = await createRes.json();
         if (!createRes.ok) {
           console.error("provision failed", created);
-          return json({ error: created.message || "Failed to create MetaAPI account", details: created });
+          return json({ error: (created.message || "Failed to create MetaAPI account") + tokenHint, details: created });
         }
 
 
