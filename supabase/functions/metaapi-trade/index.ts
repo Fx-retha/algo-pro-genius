@@ -19,13 +19,12 @@ serve(async (req) => {
     if (!METAAPI_TOKEN) {
       return json({ error: "MetaAPI token not configured. Add your MetaAPI API token in settings." });
     }
-    // Real MetaAPI tokens are JWTs (three dot-separated parts, very long)
-    if (METAAPI_TOKEN.split(".").length !== 3) {
-      return json({
-        error:
-          "The saved MetaAPI token is not a valid API token. Copy the long JWT token from MetaAPI → API access tokens (it starts with 'eyJ' and has two dots), not the account ID.",
-      });
-    }
+    // Real MetaAPI API tokens are JWTs; a short opaque string is usually an account ID pasted by mistake
+    const tokenHint =
+      METAAPI_TOKEN.split(".").length !== 3
+        ? " (The saved MetaAPI token doesn't look like an API token — copy the long token from MetaAPI → API access tokens, it starts with 'eyJ'.)"
+        : "";
+
 
     const body = await req.json();
     const { action, accountId, symbol, volume, stopLoss, takeProfit, actionType } = body;
