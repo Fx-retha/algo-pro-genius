@@ -37,8 +37,9 @@ serve(async (req) => {
         headers: { "auth-token": METAAPI_TOKEN },
       });
       const data = await res.json().catch(() => ({}));
-      return json(res.ok ? { ok: true, accounts: Array.isArray(data) ? data.length : 0 } : { error: data.message || "Token rejected by MetaAPI" });
+      return json(res.ok ? { ok: true, accounts: Array.isArray(data) ? data.length : 0 } : { error: (data.message || "Token rejected by MetaAPI") + tokenHint });
     }
+
 
     if (action !== "provision_account" && action !== "list_accounts" && !accountId) {
       return json({ error: "accountId is required for this action" });
