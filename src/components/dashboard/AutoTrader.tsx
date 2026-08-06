@@ -92,7 +92,7 @@ export function AutoTrader() {
   const runNow = async () => {
     if (!user) return;
     setRunning(true);
-    const { data, error } = await supabase.functions.invoke('trading-bot-worker', { body: { userId: user.id } });
+    const { data, error } = await supabase.functions.invoke('trading-bot-worker', { body: {} });
     setRunning(false);
     if (error) { toast.error(error.message); return; }
     const r = data?.results?.[0];
