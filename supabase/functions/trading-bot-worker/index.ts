@@ -171,12 +171,28 @@ async function processConfig(supabase: any, cfg: BotConfig) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
-    // Optional: target a single user (manual trigger from app)
+    // The scheduled cron job calls this with the service role key -> run for all users.
+    // Any other caller must be an authenticated user and may only run their own bot.
     let targetUserId: string | null = null;
-    if (req.method === "POST") {
-      try { const b = await req.json(); targetUserId = b?.userId ?? null; } catch { /* ignore */ }
+    if (token !== SERVICE_KEY) {
+      const { data: userData, error: userError } = await supabase.auth.getUser(token);
+      if (userError || !userData?.user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      // Never trust a caller-supplied userId
+      targetUserId = userData.user.id;
     }
 
     let q = supabase.from("bot_configs").select("*").eq("enabled", true);
@@ -194,7 +210,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("worker error", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    return new Response(JSON.stringify({ error: "Worker failed" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

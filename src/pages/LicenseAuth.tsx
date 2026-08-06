@@ -27,6 +27,14 @@ const LicenseAuth = () => {
     setLicenseError(null);
 
     try {
+      // License checks are server-side and require a signed-in account
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setLoading(false);
+        navigate('/mentor-auth?next=/license-auth');
+        return;
+      }
+
       const { data, error } = await supabase.rpc('validate_license_key', {
         license_key: licenseKey.trim()
       });
@@ -45,7 +53,17 @@ const LicenseAuth = () => {
         return;
       }
 
-      localStorage.setItem('validated_license_key', licenseKey.toUpperCase());
+      // Bind the license to this account server-side (enforced by the database)
+      const { data: activation, error: activationError } = await supabase.rpc('activate_license_key', {
+        license_key: licenseKey.trim()
+      });
+      const act = activation as { success: boolean; error?: string } | null;
+      if (activationError || !act?.success) {
+        setLicenseError(act?.error || 'Could not activate this license key');
+        setLoading(false);
+        return;
+      }
+
       toast({
         title: "License verified!",
         description: "Welcome to Code Base Algo Pro.",

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,47 +16,56 @@ serve(async (req) => {
     });
 
   try {
+    // ---- Require an authenticated user ----
+    const authHeader = req.headers.get("Authorization") ?? "";
+    if (!authHeader.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) return json({ error: "Unauthorized" }, 401);
+    const user = userData.user;
+
     const METAAPI_TOKEN = Deno.env.get("METAAPI_TOKEN");
     if (!METAAPI_TOKEN) {
       return json({ error: "MetaAPI token not configured. Add your MetaAPI API token in settings." });
     }
-    // Real MetaAPI API tokens are JWTs; a short opaque string is usually an account ID pasted by mistake
     const tokenHint =
       METAAPI_TOKEN.split(".").length !== 3
         ? " (The saved MetaAPI token doesn't look like an API token — copy the long token from MetaAPI → API access tokens, it starts with 'eyJ'.)"
         : "";
 
+    const body = await req.json().catch(() => ({}));
+    const { action, accountId, symbol, volume, stopLoss, takeProfit, actionType } = body ?? {};
 
-    const body = await req.json();
-    const { action, accountId, symbol, volume, stopLoss, takeProfit, actionType } = body;
+    if (typeof action !== "string") return json({ error: "action is required" }, 400);
 
     const baseUrl = "https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai";
     const provisioningUrl = "https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai";
 
-    if (action === "verify_token") {
-      const res = await fetch(`${provisioningUrl}/users/current/accounts`, {
-        headers: { "auth-token": METAAPI_TOKEN },
-      });
-      const data = await res.json().catch(() => ({}));
-      return json(res.ok ? { ok: true, accounts: Array.isArray(data) ? data.length : 0 } : { error: (data.message || "Token rejected by MetaAPI") + tokenHint });
+    // ---- Ownership enforcement for every action that targets an account ----
+    if (action !== "provision_account") {
+      if (!accountId || typeof accountId !== "string") {
+        return json({ error: "accountId is required for this action" }, 400);
+      }
+      const { data: owned } = await supabase
+        .from("mt_accounts")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("meta_account_id", accountId)
+        .maybeSingle();
+      if (!owned) return json({ error: "You do not have access to this trading account" }, 403);
     }
 
-
-    if (action !== "provision_account" && action !== "list_accounts" && !accountId) {
-      return json({ error: "accountId is required for this action" });
-    }
-
-
-    // Route based on action
     switch (action) {
       // Create (provision) a MetaAPI account from broker login/password/server.
-      // Works with any MT4/MT5 broker, incl. Razor Markets and other SA brokers.
       case "provision_account": {
         const { login, password, server, platform, name, region } = body;
         if (!login || !password || !server) {
-          return new Response(JSON.stringify({ error: "login, password and server are required" }), {
-            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return json({ error: "login, password and server are required" }, 400);
         }
 
         const createRes = await fetch(`${provisioningUrl}/users/current/accounts`, {
@@ -76,19 +86,15 @@ serve(async (req) => {
         const created = await createRes.json();
         if (!createRes.ok) {
           console.error("provision failed", created);
-          return json({ error: (created.message || "Failed to create MetaAPI account") + tokenHint, details: created });
+          return json({ error: (created.message || "Failed to create MetaAPI account") + tokenHint });
         }
 
-
-        // Deploy so it can trade (ignore errors — may already be deploying)
         await fetch(`${provisioningUrl}/users/current/accounts/${created.id}/deploy`, {
           method: "POST",
           headers: { "auth-token": METAAPI_TOKEN },
         }).catch(() => null);
 
-        return new Response(JSON.stringify({ accountId: created.id, state: "DEPLOYING" }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return json({ accountId: created.id, state: "DEPLOYING" });
       }
 
       case "remove_account": {
@@ -98,19 +104,16 @@ serve(async (req) => {
         const res = await fetch(`${provisioningUrl}/users/current/accounts/${accountId}`, {
           method: "DELETE", headers: { "auth-token": METAAPI_TOKEN },
         });
-        return new Response(JSON.stringify({ ok: res.ok }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return json({ ok: res.ok });
       }
+
       case "get_account_info": {
-        const res = await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}`, {
+        const res = await fetch(`${provisioningUrl}/users/current/accounts/${accountId}`, {
           headers: { "auth-token": METAAPI_TOKEN },
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to get account info");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        if (!res.ok) return json({ error: data.message || "Failed to get account info" });
+        return json(data);
       }
 
       case "get_positions": {
@@ -118,10 +121,8 @@ serve(async (req) => {
           headers: { "auth-token": METAAPI_TOKEN },
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to get positions");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        if (!res.ok) return json({ error: data.message || "Failed to get positions" });
+        return json(data);
       }
 
       case "get_account_metrics": {
@@ -129,97 +130,73 @@ serve(async (req) => {
           headers: { "auth-token": METAAPI_TOKEN },
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to get metrics");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        if (!res.ok) return json({ error: data.message || "Failed to get metrics" });
+        return json(data);
       }
 
       case "place_trade": {
         if (!symbol || !volume || !actionType) {
-          return new Response(JSON.stringify({ error: "Missing required trade parameters: symbol, volume, actionType" }), {
-            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return json({ error: "Missing required trade parameters: symbol, volume, actionType" }, 400);
+        }
+        if (typeof symbol !== "string" || !/^[A-Za-z0-9/._-]{1,20}$/.test(symbol)) {
+          return json({ error: "Invalid symbol" }, 400);
+        }
+        if (actionType !== "ORDER_TYPE_BUY" && actionType !== "ORDER_TYPE_SELL") {
+          return json({ error: "Invalid actionType" }, 400);
+        }
+        const vol = parseFloat(String(volume));
+        if (!Number.isFinite(vol) || vol <= 0 || vol > 100) {
+          return json({ error: "Invalid volume" }, 400);
         }
 
-        const tradeBody: Record<string, unknown> = {
-          actionType, // ORDER_TYPE_BUY or ORDER_TYPE_SELL
-          symbol,
-          volume: parseFloat(volume),
-        };
-        if (stopLoss) tradeBody.stopLoss = parseFloat(stopLoss);
-        if (takeProfit) tradeBody.takeProfit = parseFloat(takeProfit);
+        const tradeBody: Record<string, unknown> = { actionType, symbol, volume: vol };
+        const sl = stopLoss !== undefined && stopLoss !== null ? parseFloat(String(stopLoss)) : NaN;
+        const tp = takeProfit !== undefined && takeProfit !== null ? parseFloat(String(takeProfit)) : NaN;
+        if (Number.isFinite(sl)) tradeBody.stopLoss = sl;
+        if (Number.isFinite(tp)) tradeBody.takeProfit = tp;
 
         const res = await fetch(`${baseUrl}/users/current/accounts/${accountId}/trade`, {
           method: "POST",
-          headers: {
-            "auth-token": METAAPI_TOKEN,
-            "Content-Type": "application/json",
-          },
+          headers: { "auth-token": METAAPI_TOKEN, "Content-Type": "application/json" },
           body: JSON.stringify(tradeBody),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to place trade");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        if (!res.ok) return json({ error: data.message || "Failed to place trade" });
+        return json(data);
       }
 
       case "close_position": {
         const positionId = body.positionId;
+        if (!positionId || typeof positionId !== "string") {
+          return json({ error: "positionId is required" }, 400);
+        }
         const res = await fetch(`${baseUrl}/users/current/accounts/${accountId}/trade`, {
           method: "POST",
-          headers: {
-            "auth-token": METAAPI_TOKEN,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            actionType: "POSITION_CLOSE_ID",
-            positionId,
-          }),
+          headers: { "auth-token": METAAPI_TOKEN, "Content-Type": "application/json" },
+          body: JSON.stringify({ actionType: "POSITION_CLOSE_ID", positionId }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to close position");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        if (!res.ok) return json({ error: data.message || "Failed to close position" });
+        return json(data);
       }
 
       case "get_symbol_price": {
-        if (!symbol) {
-          return new Response(JSON.stringify({ error: "symbol required" }), {
-            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+        if (!symbol || typeof symbol !== "string" || !/^[A-Za-z0-9/._-]{1,20}$/.test(symbol)) {
+          return json({ error: "Invalid symbol" }, 400);
         }
         const res = await fetch(`${baseUrl}/users/current/accounts/${accountId}/symbols/${encodeURIComponent(symbol)}/current-price`, {
           headers: { "auth-token": METAAPI_TOKEN },
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to get symbol price");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      case "list_accounts": {
-        const res = await fetch("https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts", {
-          headers: { "auth-token": METAAPI_TOKEN },
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to list accounts");
-        return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        if (!res.ok) return json({ error: data.message || "Failed to get symbol price" });
+        return json(data);
       }
 
       default:
-        return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return json({ error: `Unknown action: ${action}` }, 400);
     }
   } catch (e) {
     console.error("MetaAPI error:", e);
-    return json({ error: e instanceof Error ? e.message : "Unknown error" });
+    return json({ error: "Request failed" });
   }
-
 });

@@ -4,6 +4,7 @@ import { Mic, MicOff, Send, X, Bot, User, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -18,13 +19,18 @@ async function streamChat({
   onDelta: (text: string) => void;
   onDone: () => void;
 }) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    throw new Error('Please sign in to use the AI assistant');
+  }
+
   const resp = await fetch(CHAT_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      Authorization: `Bearer ${session.access_token}`,
     },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages: messages.slice(-30) }),
   });
 
   if (!resp.ok) {
