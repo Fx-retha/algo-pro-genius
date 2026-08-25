@@ -372,6 +372,12 @@ export function MetatraderSettings() {
               {connecting ? 'Linking account…' : 'Connect Account'}
             </Button>
           )}
+
+          <Button variant="outline" className="w-full" onClick={handleTestApi} disabled={testing}>
+            {testing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+            {testing ? 'Testing API…' : 'Test API connection'}
+          </Button>
+
         </CardContent>
       </Card>
 
