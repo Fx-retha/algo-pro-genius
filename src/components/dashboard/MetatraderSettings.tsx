@@ -119,6 +119,30 @@ export function MetatraderSettings() {
     if (!error && data && !data.error) setAccountInfo(data);
   };
 
+  const handleTestApi = async () => {
+    setTesting(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        toast.error('Please sign in first — the trading API only responds to signed-in users');
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke('metaapi-trade', {
+        body: { action: 'verify_token' },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.ok) {
+        toast.success(`API connected — ${data.accounts} account(s) on your MetaAPI profile`);
+      } else {
+        toast.error(data?.error || 'API token rejected');
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'API test failed');
+    } finally {
+      setTesting(false);
+    }
+  };
+
   const handleConnect = async () => {
     if (!accountNumber || !server || !password) {
       toast.error('Please fill in all required fields including password');
