@@ -84,6 +84,7 @@ export function MetatraderSettings() {
   const [brokerOpen, setBrokerOpen] = useState(false);
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [savedAccount, setSavedAccount] = useState<{ id: string; meta_account_id: string; label: string } | null>(null);
   const [accountInfo, setAccountInfo] = useState<any>(null);
 
@@ -117,6 +118,30 @@ export function MetatraderSettings() {
       body: { action: 'get_account_metrics', accountId: metaAccountId },
     });
     if (!error && data && !data.error) setAccountInfo(data);
+  };
+
+  const handleTestApi = async () => {
+    setTesting(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        toast.error('Please sign in first — the trading API only responds to signed-in users');
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke('metaapi-trade', {
+        body: { action: 'verify_token' },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.ok) {
+        toast.success(`API connected — ${data.accounts} account(s) on your MetaAPI profile`);
+      } else {
+        toast.error(data?.error || 'API token rejected');
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'API test failed');
+    } finally {
+      setTesting(false);
+    }
   };
 
   const handleConnect = async () => {
@@ -372,6 +397,12 @@ export function MetatraderSettings() {
               {connecting ? 'Linking account…' : 'Connect Account'}
             </Button>
           )}
+
+          <Button variant="outline" className="w-full" onClick={handleTestApi} disabled={testing}>
+            {testing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+            {testing ? 'Testing API…' : 'Test API connection'}
+          </Button>
+
         </CardContent>
       </Card>
 

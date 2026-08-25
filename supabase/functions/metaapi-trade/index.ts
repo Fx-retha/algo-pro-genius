@@ -46,6 +46,22 @@ serve(async (req) => {
     const baseUrl = "https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai";
     const provisioningUrl = "https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai";
 
+    // Diagnostic: check whether the configured MetaAPI token is accepted.
+    if (action === "verify_token") {
+      const res = await fetch(`${provisioningUrl}/users/current/accounts`, {
+        headers: { "auth-token": METAAPI_TOKEN },
+      });
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        return json({
+          ok: false,
+          status: res.status,
+          error: ((payload as any)?.message || "MetaAPI rejected the token") + tokenHint,
+        });
+      }
+      return json({ ok: true, accounts: Array.isArray(payload) ? payload.length : 0 });
+    }
+
     // ---- Ownership enforcement for every action that targets an account ----
     if (action !== "provision_account") {
       if (!accountId || typeof accountId !== "string") {
@@ -59,6 +75,7 @@ serve(async (req) => {
         .maybeSingle();
       if (!owned) return json({ error: "You do not have access to this trading account" }, 403);
     }
+
 
     switch (action) {
       // Create (provision) a MetaAPI account from broker login/password/server.
