@@ -84,6 +84,7 @@ export function MetatraderSettings() {
   const [brokerOpen, setBrokerOpen] = useState(false);
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [savedAccount, setSavedAccount] = useState<{ id: string; meta_account_id: string; label: string } | null>(null);
   const [accountInfo, setAccountInfo] = useState<any>(null);
 
