@@ -145,31 +145,49 @@ export type Database = {
       mt_accounts: {
         Row: {
           broker: string | null
+          connection_status: string
           created_at: string
           id: string
           is_active: boolean
           label: string
+          last_error: string | null
+          last_synced_at: string | null
+          login: string | null
           meta_account_id: string
+          platform: string
+          robot_status: string
           updated_at: string
           user_id: string
         }
         Insert: {
           broker?: string | null
+          connection_status?: string
           created_at?: string
           id?: string
           is_active?: boolean
           label?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          login?: string | null
           meta_account_id: string
+          platform?: string
+          robot_status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           broker?: string | null
+          connection_status?: string
           created_at?: string
           id?: string
           is_active?: boolean
           label?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          login?: string | null
           meta_account_id?: string
+          platform?: string
+          robot_status?: string
           updated_at?: string
           user_id?: string
         }
