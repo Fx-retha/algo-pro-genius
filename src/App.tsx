@@ -11,6 +11,7 @@ import LicenseAuth from "./pages/LicenseAuth";
 import MentorAuth from "./pages/MentorAuth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import ConnectAccount from "./pages/ConnectAccount";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
@@ -32,6 +33,8 @@ const App = () => (
                 <Route path="/mentor-auth" element={<MentorAuth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/connect-account" element={<ConnectAccount />} />
+
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                 <Route path="*" element={<NotFound />} />
