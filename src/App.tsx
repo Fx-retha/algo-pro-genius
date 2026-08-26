@@ -33,6 +33,8 @@ const App = () => (
                 <Route path="/mentor-auth" element={<MentorAuth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/connect-account" element={<ConnectAccount />} />
+
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                 <Route path="*" element={<NotFound />} />
