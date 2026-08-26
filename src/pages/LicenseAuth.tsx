@@ -148,7 +148,16 @@ const LicenseAuth = () => {
               <p className="text-xs text-muted-foreground text-center mt-4">
                 After payment, you'll receive your license key via email
               </p>
+
+              <button
+                onClick={() => setHasPaid(true)}
+                className="w-full mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Key className="w-4 h-4" />
+                I already have a license key
+              </button>
             </>
+
           ) : (
             <>
               <div className="mx-auto w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
