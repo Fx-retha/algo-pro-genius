@@ -11,6 +11,7 @@ import LicenseAuth from "./pages/LicenseAuth";
 import MentorAuth from "./pages/MentorAuth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import ConnectAccount from "./pages/ConnectAccount";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
