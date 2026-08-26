@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,25 @@ const LicenseAuth = () => {
 
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // If the user is already signed in and holds an active license, skip straight to the app
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || cancelled) return;
+      const { data } = await supabase
+        .from("license_keys")
+        .select("status, expires_at")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      const valid =
+        data?.status === "active" &&
+        (!data.expires_at || new Date(data.expires_at) > new Date());
+      if (valid && !cancelled) navigate("/dashboard");
+    })();
+    return () => { cancelled = true; };
+  }, [navigate]);
 
   const handlePayClick = () => {
     window.open("https://www.paypal.com/ncp/payment/8ZGHV7WRTVX3N", "_blank", "noopener,noreferrer");
@@ -31,9 +50,14 @@ const LicenseAuth = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         setLoading(false);
+        toast({
+          title: "Sign in required",
+          description: "Create an account or sign in first, then activate your license key.",
+        });
         navigate('/mentor-auth?next=/license-auth');
         return;
       }
+
 
       const { data, error } = await supabase.rpc('validate_license_key', {
         license_key: licenseKey.trim()
