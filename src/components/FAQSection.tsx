@@ -8,12 +8,12 @@ import ScrollReveal from "./ScrollReveal";
 
 const faqs = [
   {
-    question: "Is Code Base Algo Pro itself a trading robot or EA?",
-    answer: "No, Code Base Algo Pro is not a trading robot or EA. It is a trade synchronization platform that allows mentors to share their trades with clients in real-time. The actual trading decisions are made by the mentors.",
+    question: "Is Code Base itself a trading robot or EA?",
+    answer: "No, Code Base is not a trading robot or EA. It is a trade synchronization platform that allows mentors to share their trades with clients in real-time. The actual trading decisions are made by the mentors.",
   },
   {
-    question: "Which brokers does Code Base Algo Pro work with?",
-    answer: "Code Base Algo Pro is compatible with virtually any MT4 or MT5 broker worldwide. Our universal integration ensures seamless connectivity regardless of your broker choice.",
+    question: "Which brokers does Code Base work with?",
+    answer: "Code Base is compatible with virtually any MT4 or MT5 broker worldwide. Our universal integration ensures seamless connectivity regardless of your broker choice.",
   },
   {
     question: "How can I get access to a license key?",
@@ -41,7 +41,7 @@ const FAQSection = () => {
               Frequently Asked <span className="text-primary text-glow">Questions</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Everything you need to know about Code Base Algo Pro
+              Everything you need to know about Code Base
             </p>
           </div>
         </ScrollReveal>

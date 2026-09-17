@@ -9,7 +9,7 @@ const Footer = () => {
               <span className="font-display font-bold text-primary-foreground">CB</span>
             </div>
             <span className="font-display font-bold text-lg text-foreground">
-              Code Base Algo Pro
+              Code Base
             </span>
           </div>
 
@@ -22,7 +22,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            © 2025 Code Base Algo Pro. All rights reserved.
+            © 2026 Code Base. All rights reserved.
           </p>
         </div>
       </div>

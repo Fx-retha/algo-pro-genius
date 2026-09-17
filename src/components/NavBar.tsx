@@ -28,7 +28,7 @@ const NavBar = () => {
               <span className="font-display font-bold text-primary-foreground">CB</span>
             </div>
             <span className="font-display font-bold text-lg text-foreground">
-              Code Base Algo Pro
+              Code Base
             </span>
           </Link>
 

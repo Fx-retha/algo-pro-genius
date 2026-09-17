@@ -19,7 +19,7 @@ import OAuthConsent from "./pages/OAuthConsent";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="algo-pro-theme">
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="code-base-theme">
     <InterfaceStyleProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
