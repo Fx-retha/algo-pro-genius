@@ -119,7 +119,7 @@ export function MyWebsite() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Brand Name</Label>
-              <Input defaultValue="Code Base Algo Pro" />
+              <Input defaultValue="Code Base" />
             </div>
             <div className="space-y-2">
               <Label>Tagline</Label>

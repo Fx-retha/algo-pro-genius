@@ -99,7 +99,7 @@ const ResetPassword = () => {
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center neon-glow">
               <span className="font-display font-bold text-primary-foreground text-lg">CB</span>
             </div>
-            <span className="font-display font-bold text-xl">Code Base Algo Pro</span>
+            <span className="font-display font-bold text-xl">Code Base</span>
           </div>
 
           {success ? (

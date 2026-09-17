@@ -11,7 +11,7 @@ interface BotControlPanelProps {
   onLogsClick: () => void;
 }
 
-export function BotControlPanel({ botName = "CODE BASE ALGO PRO", botAvatar, onPairsClick, onLogsClick }: BotControlPanelProps) {
+export function BotControlPanel({ botName = "CODE BASE", botAvatar, onPairsClick, onLogsClick }: BotControlPanelProps) {
   const avatarSrc = botAvatar || defaultRobot;
   const [isRunning, setIsRunning] = useState(false);
   const [keyStats, setKeyStats] = useState({ total: 0, used: 0 });

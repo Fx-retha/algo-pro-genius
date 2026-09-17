@@ -208,7 +208,7 @@ async function getProductImages(_ctx: ReqCtx) {
   return ok({
     product_id: 1,
     product_name: APP_NAME,
-    product_description: "Code Base Algo Pro — AI-powered MT5 trading suite.",
+    product_description: "Code Base — AI-powered MT5 trading suite.",
     platform: "MT5",
     main_image: null, image: null, logo: null, video: null,
   });

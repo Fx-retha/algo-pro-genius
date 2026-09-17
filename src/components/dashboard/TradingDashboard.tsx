@@ -20,7 +20,7 @@ export function TradingDashboard() {
   const [pairsOpen, setPairsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
   const [robots, setRobots] = useState<Robot[]>([
-    { id: '1', name: 'CODE BASE ALGO PRO', isActive: true, avatar: heroRobot },
+    { id: '1', name: 'CODE BASE', isActive: true, avatar: heroRobot },
     { id: '2', name: 'CODE BASE SCALPER PRO', isActive: true, avatar: heroRobot2 },
   ]);
   const [selectedRobotId, setSelectedRobotId] = useState<string>('1');
