@@ -89,7 +89,6 @@ Deno.serve(async (req) => {
             status: "closed", close_price: closeAt, profit, closed_at: new Date().toISOString(),
             note: hitSL ? "Stop loss hit" : "Take profit hit",
           }).eq("id", p.id);
-          await admin.rpc as unknown; // no-op guard
           const { data: acc } = await admin.from("paper_accounts").select("balance").eq("id", accountId).maybeSingle();
           await admin.from("paper_accounts").update({ balance: Number(acc?.balance ?? 0) + profit }).eq("id", accountId);
         } else {
