@@ -64,6 +64,102 @@ export type Database = {
           },
         ]
       }
+      bridge_connections: {
+        Row: {
+          account_login: string | null
+          balance: number | null
+          created_at: string
+          equity: number | null
+          id: string
+          label: string
+          last_error: string | null
+          last_seen_at: string | null
+          platform: string
+          status: string
+          token_hash: string
+          token_prefix: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_login?: string | null
+          balance?: number | null
+          created_at?: string
+          equity?: number | null
+          id?: string
+          label?: string
+          last_error?: string | null
+          last_seen_at?: string | null
+          platform?: string
+          status?: string
+          token_hash: string
+          token_prefix: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_login?: string | null
+          balance?: number | null
+          created_at?: string
+          equity?: number | null
+          id?: string
+          label?: string
+          last_error?: string | null
+          last_seen_at?: string | null
+          platform?: string
+          status?: string
+          token_hash?: string
+          token_prefix?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      economic_events: {
+        Row: {
+          actual: string | null
+          country: string | null
+          currency: string | null
+          event_time: string
+          external_id: string
+          fetched_at: string
+          forecast: string | null
+          id: string
+          impact: string
+          previous: string | null
+          source: string
+          title: string
+        }
+        Insert: {
+          actual?: string | null
+          country?: string | null
+          currency?: string | null
+          event_time: string
+          external_id: string
+          fetched_at?: string
+          forecast?: string | null
+          id?: string
+          impact?: string
+          previous?: string | null
+          source?: string
+          title: string
+        }
+        Update: {
+          actual?: string | null
+          country?: string | null
+          currency?: string | null
+          event_time?: string
+          external_id?: string
+          fetched_at?: string
+          forecast?: string | null
+          id?: string
+          impact?: string
+          previous?: string | null
+          source?: string
+          title?: string
+        }
+        Relationships: []
+      }
       license_keys: {
         Row: {
           activated_at: string | null
@@ -193,6 +289,141 @@ export type Database = {
         }
         Relationships: []
       }
+      paper_accounts: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          equity: number
+          id: string
+          is_active: boolean
+          label: string
+          leverage: number
+          max_open_trades: number
+          max_volume: number
+          starting_balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          equity?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          leverage?: number
+          max_open_trades?: number
+          max_volume?: number
+          starting_balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          equity?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          leverage?: number
+          max_open_trades?: number
+          max_volume?: number
+          starting_balance?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_positions: {
+        Row: {
+          account_id: string
+          bridge_status: string | null
+          close_price: number | null
+          closed_at: string | null
+          created_at: string
+          execution_mode: string
+          id: string
+          note: string | null
+          open_price: number
+          opened_at: string
+          profit: number
+          side: string
+          signal_id: string | null
+          source: string
+          status: string
+          stop_loss: number | null
+          symbol: string
+          take_profit: number | null
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          bridge_status?: string | null
+          close_price?: number | null
+          closed_at?: string | null
+          created_at?: string
+          execution_mode?: string
+          id?: string
+          note?: string | null
+          open_price: number
+          opened_at?: string
+          profit?: number
+          side: string
+          signal_id?: string | null
+          source?: string
+          status?: string
+          stop_loss?: number | null
+          symbol: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          bridge_status?: string | null
+          close_price?: number | null
+          closed_at?: string | null
+          created_at?: string
+          execution_mode?: string
+          id?: string
+          note?: string | null
+          open_price?: number
+          opened_at?: string
+          profit?: number
+          side?: string
+          signal_id?: string | null
+          source?: string
+          status?: string
+          stop_loss?: number | null
+          symbol?: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_positions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "paper_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paper_positions_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -231,6 +462,51 @@ export type Database = {
           subscription_plan?: string | null
           theme_preference?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scan_history: {
+        Row: {
+          confidence: number
+          created_at: string
+          direction: string
+          entry: string | null
+          id: string
+          live_price: number | null
+          rejected_reason: string | null
+          stop_loss: string | null
+          summary: string | null
+          symbol: string
+          take_profit: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          direction?: string
+          entry?: string | null
+          id?: string
+          live_price?: number | null
+          rejected_reason?: string | null
+          stop_loss?: string | null
+          summary?: string | null
+          symbol: string
+          take_profit?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          direction?: string
+          entry?: string | null
+          id?: string
+          live_price?: number | null
+          rejected_reason?: string | null
+          stop_loss?: string | null
+          summary?: string | null
+          symbol?: string
+          take_profit?: string | null
           user_id?: string
         }
         Relationships: []
