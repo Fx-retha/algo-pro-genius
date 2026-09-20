@@ -1,30 +1,12 @@
 // Demo-only trading engine. No broker, no credentials. All validation server-side.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { getQuote as quote } from "../_shared/quotes.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-
-const quoteCache = new Map<string, { price: number; at: number }>();
-async function quote(symbol: string): Promise<number | null> {
-  const s = symbol.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  const hit = quoteCache.get(s);
-  if (hit && Date.now() - hit.at < 15_000) return hit.price;
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 8000);
-  try {
-    const res = await fetch(`https://stooq.com/q/l/?s=${s.toLowerCase()}&f=sd2t2ohlcv&h&e=csv`, { signal: ctrl.signal });
-    if (!res.ok) return null;
-    const rows = (await res.text()).trim().split("\n");
-    if (rows.length < 2) return null;
-    const close = Number(rows[1].split(",")[6]);
-    if (!Number.isFinite(close) || close <= 0) return null;
-    quoteCache.set(s, { price: close, at: Date.now() });
-    return close;
-  } catch { return null; } finally { clearTimeout(t); }
-}
 
 // Approximate contract value per 1.0 lot, used for demo P/L only.
 function contractSize(symbol: string) {
