@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database, Link2, CheckCircle2, XCircle, Eye, EyeOff, Lock, Check, ChevronsUpDown, Terminal, Copy, Loader2 } from 'lucide-react';
+import { Database, Link2, CheckCircle2, XCircle, Eye, EyeOff, Lock, Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,7 +84,6 @@ export function MetatraderSettings() {
   const [brokerOpen, setBrokerOpen] = useState(false);
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
-  const [testing, setTesting] = useState(false);
   const [savedAccount, setSavedAccount] = useState<{ id: string; meta_account_id: string; label: string } | null>(null);
   const [accountInfo, setAccountInfo] = useState<any>(null);
 
@@ -118,30 +117,6 @@ export function MetatraderSettings() {
       body: { action: 'get_account_metrics', accountId: metaAccountId },
     });
     if (!error && data && !data.error) setAccountInfo(data);
-  };
-
-  const handleTestApi = async () => {
-    setTesting(true);
-    try {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) {
-        toast.error('Please sign in first — the trading API only responds to signed-in users');
-        return;
-      }
-      const { data, error } = await supabase.functions.invoke('metaapi-trade', {
-        body: { action: 'verify_token' },
-      });
-      if (error) throw new Error(error.message);
-      if (data?.ok) {
-        toast.success(`API connected — ${data.accounts} account(s) on your MetaAPI profile`);
-      } else {
-        toast.error(data?.error || 'API token rejected');
-      }
-    } catch (e: any) {
-      toast.error(e.message || 'API test failed');
-    } finally {
-      setTesting(false);
-    }
   };
 
   const handleConnect = async () => {
@@ -398,11 +373,6 @@ export function MetatraderSettings() {
             </Button>
           )}
 
-          <Button variant="outline" className="w-full" onClick={handleTestApi} disabled={testing}>
-            {testing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-            {testing ? 'Testing API…' : 'Test API connection'}
-          </Button>
-
         </CardContent>
       </Card>
 
@@ -450,13 +420,7 @@ export function MetatraderSettings() {
       )}
 
 
-      {/* Code Base EA API endpoint — wire this URL into your MT4/MT5 EA */}
-      <Card className="border-border bg-card/50 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-              <Terminal className="h-6 w-6 text-primary" />
-            </div>
+    </div>
             <div>
               <CardTitle className="font-display">Code Base EA API</CardTitle>
               <CardDescription>Paste this URL into your MT4/MT5 EA settings</CardDescription>
