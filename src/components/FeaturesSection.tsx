@@ -24,7 +24,7 @@ const features = [
   {
     icon: Shield,
     title: "Secure & Reliable",
-    description: "Bank-grade security with encrypted connections and secure API integrations.",
+    description: "Encrypted connections keep your trading account secure.",
     color: "#10b981",
   },
   {

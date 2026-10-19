@@ -7,7 +7,6 @@ import { Bell, Palette, LayoutGrid, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
 import { ChartScanner } from './ChartScanner';
-import { AutoTrader } from './AutoTrader';
 import { useInterfaceStyle } from '@/hooks/useInterfaceStyle';
 
 const themes = [
@@ -39,7 +38,6 @@ export function BotSettings() {
     <div className="space-y-6 pb-20">
       {/* Chart Scanner */}
       <ChartScanner />
-      <AutoTrader />
       <Card className="border-border bg-card/50 backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center gap-3">

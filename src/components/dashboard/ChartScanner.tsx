@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Camera, Upload, Loader2, TrendingUp, TrendingDown, Target, ShieldCheck, X, Zap, History, Activity } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, Target, ShieldCheck, Zap, History, Activity } from 'lucide-react';
+import { ScannerCapture } from './ScannerCapture';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +34,7 @@ export function ChartScanner() {
   const [autoExecute, setAutoExecute] = useState<boolean>(() => localStorage.getItem(AUTO_KEY) === '1');
   const [livePrice, setLivePrice] = useState<{ price: number; symbol: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const livePollRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -185,25 +187,21 @@ export function ChartScanner() {
   };
 
   return (
-    <Card className="border-border bg-card/50 backdrop-blur-sm">
+    <section aria-label="Chart Scanner" className="mx-auto max-w-3xl space-y-4">
       <CardHeader>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-              <Camera className="h-5 w-5 text-primary" />
-            </div>
             <div>
               <CardTitle className="font-display text-lg">Chart Scanner</CardTitle>
-              <p className="text-xs text-muted-foreground">AI vision + live market data</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase text-muted-foreground">Auto</span>
-            <Switch checked={autoExecute} onCheckedChange={setAutoExecute} />
+            <span id="scanner-auto-label" className="text-xs text-muted-foreground">Auto-trade</span>
+            <Switch aria-labelledby="scanner-auto-label" checked={autoExecute} onCheckedChange={setAutoExecute} />
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <div className="space-y-4">
         <input
           ref={fileInputRef}
           type="file"
@@ -212,58 +210,21 @@ export function ChartScanner() {
           className="hidden"
         />
 
-        {!imagePreview ? (
-          <div className="w-full border-2 border-dashed border-border rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all">
-            <Upload className="h-8 w-8 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Upload a chart image or take a photo</span>
-            <div className="flex gap-3 w-full">
-              <Button variant="outline" className="flex-1" onClick={() => fileInputRef.current?.click()}>
-                <Upload className="h-4 w-4 mr-2" />
-                Gallery
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => {
-                  const cameraInput = document.createElement('input');
-                  cameraInput.type = 'file';
-                  cameraInput.accept = 'image/*';
-                  cameraInput.capture = 'environment';
-                  cameraInput.onchange = (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                      setImagePreview(ev.target?.result as string);
-                      setResult(null);
-                    };
-                    reader.readAsDataURL(file);
-                  };
-                  cameraInput.click();
-                }}
-              >
-                <Camera className="h-4 w-4 mr-2" />
-                Camera
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="relative">
-            <img src={imagePreview} alt="Chart" className="w-full rounded-xl border border-border max-h-48 object-cover" />
-            <button
-              onClick={clearImage}
-              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/80 border border-border flex items-center justify-center hover:bg-destructive/20 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+        <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} className="hidden" />
+        <ScannerCapture
+          image={imagePreview}
+          busy={isAnalyzing || isExecuting}
+          confidence={result?.confidence ?? 0}
+          onShoot={() => cameraInputRef.current?.click()}
+          onImport={() => fileInputRef.current?.click()}
+          onClear={clearImage}
+        />
 
         <Button onClick={analyzeChart} disabled={!imagePreview || isAnalyzing} className="w-full" size="lg">
           {isAnalyzing ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Scanning + fetching live price...
+              Scanning chart…
             </>
           ) : (
             <>
@@ -409,7 +370,7 @@ export function ChartScanner() {
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
