@@ -1,6 +1,6 @@
 import { Camera, Upload, Activity, Crosshair, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import robot from '@/assets/hero-robot-2.jpeg';
+import robot from '@/assets/hero-robot.jpeg';
 
 interface ScannerCaptureProps {
   image: string | null;
