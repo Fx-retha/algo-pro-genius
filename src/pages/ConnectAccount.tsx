@@ -241,8 +241,7 @@ export default function ConnectAccount() {
         <header className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">Trading account</h1>
           <p className="text-sm text-muted-foreground">
-            Link your MT4 or MT5 account. Credentials are sent straight to the secure backend — no broker or API keys
-            ever live in this page.
+            Link your MT4 or MT5 trading account.
           </p>
         </header>
 
