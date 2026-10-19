@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, TrendingUp, TrendingDown, Target, ShieldCheck, Zap, History, Activity } from 'lucide-react';
